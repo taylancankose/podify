@@ -77,3 +77,18 @@ export const AudioValidationSchema = yup.object().shape({
     .oneOf(categories, "Invalid category!")
     .required("Category is missing!"),
 });
+
+export const NewPlaylistValidationSchema = yup.object().shape({
+  // while creating playlist there can be request
+  // with new playlist name and the audio that uesr wants to store inside that playlist
+  // or user just want to create an empty playlist
+
+  title: yup.string().required("Title is missing!"),
+  resId: yup.string().transform(function (value) {
+    return this.isType(value) && isValidObjectId(value) ? value : "";
+  }), // items içindeki id
+  visibility: yup
+    .string()
+    .oneOf(["public", "private"], "Visibility must be public or private")
+    .required("Visibility is missing!"),
+});
