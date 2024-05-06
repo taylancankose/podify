@@ -1,8 +1,8 @@
 import { PopulatedFavList } from "#/@types/audio";
-import Audio, { AudioDocument } from "#/models/audio";
+import Audio from "#/models/audio";
 import Favorite from "#/models/favorite";
 import { RequestHandler } from "express";
-import { ObjectId, isValidObjectId } from "mongoose";
+import { isValidObjectId } from "mongoose";
 
 export const toggleFavorite: RequestHandler = async (req, res) => {
   const audioId = req.query.audioId as string;
@@ -98,4 +98,18 @@ export const getFavorites: RequestHandler = async (req, res) => {
   });
   // böylece sadece göndermek istediğimiz datayı seçip bunu response olarak yollayabiliriz. formatted
   res.json({ audios });
+};
+
+export const getIsFavorite: RequestHandler = async (req, res) => {
+  const audioId = req.query.audioId as string;
+
+  if (!isValidObjectId(audioId))
+    return res.status(422).json({ error: "invalid audio id" });
+
+  const favorite = await Favorite.findOne({
+    owner: req.user.id,
+    items: audioId,
+  });
+
+  res.json({ result: favorite ? true : false });
 };
