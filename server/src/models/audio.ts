@@ -16,6 +16,7 @@ export interface AudioDocument<T = ObjectId> {
   };
   likes: ObjectId[]; // users who like this audio
   category: categoriesTypes;
+  createdAt: Date;
 }
 
 const AudioSchema = new Schema<AudioDocument>(
