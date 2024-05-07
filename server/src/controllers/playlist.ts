@@ -108,10 +108,18 @@ export const removePlaylist: RequestHandler = async (req, res) => {
 };
 
 export const getPlaylistByProfile: RequestHandler = async (req, res) => {
+  const { pageNo = "0", limit = "20" } = req.query as {
+    pageNo: string;
+    limit: string;
+  };
+
   const data = await Playlist.find({
     owner: req.user.id, // from mustAuth middleware
     visibility: { $ne: "auto" }, // visibility auto olmayanları bulmak istiyoruz
-  }).sort("-createdAt"); // latest at the top
+  })
+    .skip(parseInt(pageNo) * parseInt(limit)) // page: 0 => 0 tane geç, page: 1 => 20 tane geç (limit kadar)
+    .limit(parseInt(limit)) // 20 tane göster (limit kadar)
+    .sort("-createdAt"); // latest at the top
 
   // Format data:
   const playlist = data.map((item) => {
