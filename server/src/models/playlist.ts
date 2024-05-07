@@ -4,7 +4,7 @@ interface PlaylistDocument {
   title: string;
   owner: ObjectId;
   items: ObjectId[];
-  visiblity: "public" | "private" | "auto";
+  visibility: "public" | "private" | "auto";
 }
 
 const playlistSchema = new Schema<PlaylistDocument>(
@@ -25,7 +25,7 @@ const playlistSchema = new Schema<PlaylistDocument>(
         ref: "Audio",
       },
     ],
-    visiblity: {
+    visibility: {
       type: String,
       enum: ["public", "private", "auto"],
       default: "public",
