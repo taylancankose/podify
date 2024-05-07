@@ -121,3 +121,23 @@ export const getPublicUploads: RequestHandler = async (req, res) => {
 
   res.json({ audios });
 };
+
+export const getPublicProfile: RequestHandler = async (req, res) => {
+  const { profileId } = req.params;
+
+  if (!isValidObjectId(profileId))
+    return res.status(422).json({ error: "Invalid profile id" });
+
+  const user = await User.findById(profileId);
+
+  if (!user) return res.status(422).json({ error: "User not found" });
+
+  res.json({
+    profile: {
+      id: user._id,
+      name: user.name,
+      followers: user.followers.length,
+      avatar: user.avatar?.url,
+    },
+  });
+};
