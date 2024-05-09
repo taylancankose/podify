@@ -1,8 +1,7 @@
-import colors from '@utils/colors';
+import AppButton from '@ui/AppButton';
 import {useFormikContext} from 'formik';
 import {FC} from 'react';
 import React = require('react');
-import {StyleSheet, Pressable, Text} from 'react-native';
 
 interface Props {
   title: string;
@@ -10,27 +9,7 @@ interface Props {
 
 const SubmitBtn: FC<Props> = props => {
   const {handleSubmit} = useFormikContext();
-  return (
-    <Pressable onPress={() => handleSubmit()} style={styles.btn}>
-      <Text style={styles.btnText}>{props.title}</Text>
-    </Pressable>
-  );
+  return <AppButton onPress={() => handleSubmit()} title={props.title} />;
 };
-
-const styles = StyleSheet.create({
-  btn: {
-    marginTop: 14,
-    backgroundColor: colors.SECONDARY,
-    paddingHorizontal: 2,
-    paddingVertical: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 2,
-  },
-  btnText: {
-    color: colors.CONTRAST,
-    fontWeight: '600',
-  },
-});
 
 export default SubmitBtn;

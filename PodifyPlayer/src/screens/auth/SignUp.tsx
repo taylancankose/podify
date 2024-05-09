@@ -44,6 +44,7 @@ const SignUp: FC<Props> = props => {
             label="Password"
             autoCapitalize="none"
             secureTextEntry
+            containerStyle={styles.marginBottom}
           />
           <SubmitBtn title="Sign Up" />
         </View>
