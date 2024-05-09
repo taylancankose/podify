@@ -1,6 +1,5 @@
 import colors from '@utils/colors';
-import React = require('react');
-import {FC} from 'react';
+import React, {FC} from 'react';
 import {View, StyleSheet, FlexStyle} from 'react-native';
 
 interface Props {

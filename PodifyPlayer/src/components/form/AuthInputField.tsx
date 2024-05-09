@@ -1,8 +1,7 @@
 import AppInput from '@ui/AppInput';
 import colors from '@utils/colors';
 import {useFormikContext} from 'formik';
-import {FC} from 'react';
-import React = require('react');
+import React, {FC, ReactNode, useEffect} from 'react';
 import {
   View,
   StyleSheet,
@@ -30,7 +29,7 @@ interface Props {
   secureTextEntry?: TextInputProps['secureTextEntry'];
   autoCapitalize?: TextInputProps['autoCapitalize'];
   containerStyle?: StyleProp<ViewStyle>; // style 'ın kendinden aldık bunu multiplestyle kullanmak için
-  rightIcon?: React.ReactNode;
+  rightIcon?: ReactNode;
   onRightIconPress?(): void;
 }
 
@@ -75,7 +74,7 @@ const AuthInputField: FC<Props> = props => {
     };
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (errorMsg) shakeUI();
   }, [errorMsg]);
 

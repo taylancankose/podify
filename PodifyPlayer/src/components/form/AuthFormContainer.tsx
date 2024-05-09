@@ -1,13 +1,12 @@
 import Circle from '@ui/Circle';
 import colors from '@utils/colors';
-import React = require('react');
-import {FC} from 'react';
+import React, {FC, ReactNode} from 'react';
 import {View, Text, StyleSheet, Image} from 'react-native';
 
 interface Props {
   title: string;
   subtitle?: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 const AuthFormContainer: FC<Props> = ({children, title, subtitle}) => {

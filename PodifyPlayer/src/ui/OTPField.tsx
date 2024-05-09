@@ -1,19 +1,23 @@
 import colors from '@utils/colors';
-import React = require('react');
-import {FC} from 'react';
+import React, {forwardRef} from 'react';
 import {StyleSheet, TextInput, TextInputProps} from 'react-native';
 
-interface Props extends TextInputProps {}
+interface Props extends TextInputProps {
+  ref: any;
+}
 
-const OTPField: FC<Props> = props => {
+const OTPField = forwardRef<TextInput, Props>((props, ref) => {
   return (
     <TextInput
       {...props}
+      ref={ref}
       style={[styles.input, props.style]}
       placeholderTextColor={colors.INACTIVE_CONTRAST}
+      maxLength={1}
+      keyboardType="numeric"
     />
   );
-};
+});
 
 const styles = StyleSheet.create({
   input: {
