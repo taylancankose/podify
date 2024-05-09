@@ -6,7 +6,7 @@ import {View, Text, StyleSheet, Image} from 'react-native';
 
 interface Props {
   title: string;
-  subtitle: string;
+  subtitle?: string;
   children: React.ReactNode;
 }
 
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     color: colors.SECONDARY,
     fontSize: 24,
     fontWeight: 'bold',
-    paddingVertical: 4,
+    paddingVertical: 6,
   },
   subtitle: {color: colors.CONTRAST},
 });

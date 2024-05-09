@@ -34,3 +34,11 @@ export const signinSchema = yup.object({
     .min(8, 'Password should be at least 8 characters')
     .required('Password is required'),
 });
+
+export const forgetPasswordSchema = yup.object({
+  password: yup
+    .string()
+    .trim('Password is missing')
+    .min(8, 'Password should be at least 8 characters')
+    .required('Password is required'),
+});

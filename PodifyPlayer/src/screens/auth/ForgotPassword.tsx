@@ -1,33 +1,31 @@
-import React, {FC, useState} from 'react';
+import React, {FC} from 'react';
 import {SafeAreaView, StyleSheet, View} from 'react-native';
 import colors from '@utils/colors';
 import Form from '@components/form';
-import {signinSchema} from '@utils/schemas';
+import {forgetPasswordSchema} from '@utils/schemas';
 import AuthInputField from '@components/form/AuthInputField';
 import SubmitBtn from '@components/form/SubmitBtn';
-import PasswordIcon from '@ui/PasswordIcon';
 import AppLink from '@ui/AppLink';
 import AuthFormContainer from '@components/form/AuthFormContainer';
 
 const initialValues = {
   email: '',
-  password: '',
 };
 
 interface Props {}
 
-const SignIn: FC<Props> = props => {
-  const [secureEntry, setSecureEntry] = useState(true);
-
+const ForgotPassword: FC<Props> = props => {
   return (
     <SafeAreaView style={styles.container}>
-      <AuthFormContainer title="Welcome Back!">
+      <AuthFormContainer
+        title="Forget Password"
+        subtitle="Oops, did you forget your password? Don't worry, we'll help you to get back in.">
         <Form
           initialValues={initialValues}
           onSubmit={values => {
             console.log(values);
           }}
-          validationSchema={signinSchema}>
+          validationSchema={forgetPasswordSchema}>
           <View style={styles.formContainer}>
             <AuthInputField
               name="email"
@@ -37,21 +35,10 @@ const SignIn: FC<Props> = props => {
               autoCapitalize="none"
               containerStyle={styles.marginBottom}
             />
-            <AuthInputField
-              name="password"
-              placeholder="********"
-              label="Password"
-              autoCapitalize="none"
-              secureTextEntry={secureEntry}
-              containerStyle={styles.marginBottom}
-              rightIcon={<PasswordIcon privateIcon={secureEntry} />}
-              onRightIconPress={() => setSecureEntry(!secureEntry)}
-            />
-            <SubmitBtn title="Sign In" />
+            <SubmitBtn title="Send Link" />
 
             <View style={styles.linkContainer}>
-              <AppLink title="I forgot my password" />
-              <AppLink title="Don't have an account?" />
+              <AppLink title="Sign In" />
             </View>
           </View>
         </Form>
@@ -76,8 +63,8 @@ const styles = StyleSheet.create({
   linkContainer: {
     alignItems: 'center',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     marginTop: 14,
   },
 });
-export default SignIn;
+export default ForgotPassword;
