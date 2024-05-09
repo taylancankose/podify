@@ -5,11 +5,15 @@ import {StyleSheet, Pressable, Text} from 'react-native';
 interface Props {
   title: string;
   onPress?(): void;
+  disabled?: boolean;
 }
 
 const AppButton: FC<Props> = props => {
   return (
-    <Pressable onPress={props.onPress} style={styles.container}>
+    <Pressable
+      onPress={props.onPress}
+      style={styles.container}
+      disabled={props.disabled}>
       <Text style={styles.title}>{props.title}</Text>
     </Pressable>
   );

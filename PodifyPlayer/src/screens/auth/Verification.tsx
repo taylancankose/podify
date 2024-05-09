@@ -1,5 +1,11 @@
 import React, {FC, useEffect, useRef, useState} from 'react';
-import {SafeAreaView, StyleSheet, TextInput, View} from 'react-native';
+import {
+  Keyboard,
+  SafeAreaView,
+  StyleSheet,
+  TextInput,
+  View,
+} from 'react-native';
 import colors from '@utils/colors';
 import AppLink from '@ui/AppLink';
 import AuthFormContainer from '@components/form/AuthFormContainer';
@@ -15,6 +21,7 @@ const Verification: FC<Props> = props => {
   const [activeOTP, setActiveOTP] = useState(0);
 
   const inputRef = useRef<TextInput>(null);
+  const filledOTPs = otp.filter(o => o !== '');
 
   const handleChange = (value: string, i: number) => {
     const newOtp = [...otp];
@@ -28,6 +35,11 @@ const Verification: FC<Props> = props => {
       newOtp[i] = value;
     }
     setOtp([...newOtp]);
+  };
+
+  const handleSubmit = () => {
+    console.log(otp);
+    console.log(filledOTPs);
   };
 
   useEffect(() => {
@@ -48,12 +60,19 @@ const Verification: FC<Props> = props => {
                   onKeyPress={({nativeEvent}) => {
                     handleChange(nativeEvent.key, i);
                   }}
+                  keyboardType="numeric"
+                  textContentType="oneTimeCode"
+                  maxLength={1}
                 />
               );
             })}
           </View>
 
-          <AppButton title="Send Link" />
+          <AppButton
+            title="Send Link"
+            onPress={handleSubmit}
+            disabled={filledOTPs.length < 6}
+          />
 
           <View style={styles.linkContainer}>
             <AppLink title="Resend OTP" />
