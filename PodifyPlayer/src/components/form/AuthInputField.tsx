@@ -10,6 +10,7 @@ import {
   TextInputProps,
   StyleProp,
   ViewStyle,
+  Pressable,
 } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -29,6 +30,8 @@ interface Props {
   secureTextEntry?: TextInputProps['secureTextEntry'];
   autoCapitalize?: TextInputProps['autoCapitalize'];
   containerStyle?: StyleProp<ViewStyle>; // style 'ın kendinden aldık bunu multiplestyle kullanmak için
+  rightIcon?: React.ReactNode;
+  onRightIconPress?(): void;
 }
 
 const AuthInputField: FC<Props> = props => {
@@ -44,6 +47,8 @@ const AuthInputField: FC<Props> = props => {
     autoCapitalize,
     containerStyle,
     name,
+    rightIcon,
+    onRightIconPress,
   } = props;
 
   const errorMsg = touched[name] && errors[name] ? errors[name] : '';
@@ -80,15 +85,25 @@ const AuthInputField: FC<Props> = props => {
         <Text style={styles.label}>{label}</Text>
         {errorMsg && <Text style={styles.errorMsg}>{errorMsg}</Text>}
       </View>
-      <AppInput
-        placeholder={placeholder}
-        keyboardType={keyboardType}
-        secureTextEntry={secureTextEntry}
-        autoCapitalize={autoCapitalize}
-        onChangeText={handleChange(name)}
-        value={values[name]}
-        onBlur={handleBlur(name)}
-      />
+      <View>
+        <AppInput
+          placeholder={placeholder}
+          keyboardType={keyboardType}
+          secureTextEntry={secureTextEntry}
+          autoCapitalize={autoCapitalize}
+          onChangeText={handleChange(name)}
+          value={values[name]}
+          onBlur={handleBlur(name)}
+        />
+
+        {rightIcon ? (
+          <Pressable
+            onPress={() => onRightIconPress()}
+            style={styles.rightIcon}>
+            {rightIcon}
+          </Pressable>
+        ) : null}
+      </View>
     </Animated.View>
   );
 };
@@ -105,6 +120,15 @@ const styles = StyleSheet.create({
   },
   errorMsg: {
     color: colors.ERROR,
+  },
+  rightIcon: {
+    width: 45,
+    height: 45,
+    position: 'absolute',
+    top: 0,
+    right: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

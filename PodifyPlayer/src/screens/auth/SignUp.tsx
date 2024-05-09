@@ -1,10 +1,12 @@
-import React, {FC} from 'react';
+import React, {FC, useState} from 'react';
 import {SafeAreaView, StyleSheet, View} from 'react-native';
 import colors from '@utils/colors';
 import Form from '@components/form';
 import {signupSchema} from '@utils/schemas';
 import AuthInputField from '@components/form/AuthInputField';
 import SubmitBtn from '@components/form/SubmitBtn';
+import Icon from 'react-native-vector-icons/Entypo';
+import PasswordIcon from '@ui/PasswordIcon';
 
 interface Props {}
 
@@ -15,6 +17,7 @@ const initialValues = {
 };
 
 const SignUp: FC<Props> = props => {
+  const [secureEntry, setSecureEntry] = useState(true);
   return (
     <SafeAreaView style={styles.container}>
       <Form
@@ -43,8 +46,10 @@ const SignUp: FC<Props> = props => {
             placeholder="********"
             label="Password"
             autoCapitalize="none"
-            secureTextEntry
+            secureTextEntry={secureEntry}
             containerStyle={styles.marginBottom}
+            rightIcon={<PasswordIcon privateIcon={secureEntry} />}
+            onRightIconPress={() => setSecureEntry(!secureEntry)}
           />
           <SubmitBtn title="Sign Up" />
         </View>
