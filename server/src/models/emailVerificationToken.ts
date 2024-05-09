@@ -1,5 +1,5 @@
 import { compare, hash } from "bcrypt";
-import { ObjectId, Schema, model } from "mongoose";
+import { Model, ObjectId, Schema, model } from "mongoose";
 
 interface EmailVerificationTokenDocument {
   owner: ObjectId;
@@ -48,7 +48,7 @@ emailVerificationTokenSchema.methods.compareToken = async function (token) {
   return result;
 };
 
-export default model<EmailVerificationTokenDocument, {}, Methods>(
-  "EmailVerificationTokenSchema",
+export default model(
+  "EmailVerificationToken",
   emailVerificationTokenSchema
-);
+) as Model<EmailVerificationTokenDocument, {}, Methods>;

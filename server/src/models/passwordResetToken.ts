@@ -1,5 +1,5 @@
 import { compare, hash } from "bcrypt";
-import { ObjectId, Schema, model } from "mongoose";
+import { Model, ObjectId, Schema, model } from "mongoose";
 
 interface PasswordResetTokenDocument {
   owner: ObjectId;
@@ -48,7 +48,8 @@ passwordResetTokenSchema.methods.compareToken = async function (token) {
   return result;
 };
 
-export default model<PasswordResetTokenDocument, {}, Methods>(
-  "PasswordResetToken",
-  passwordResetTokenSchema
-);
+export default model("PasswordResetToken", passwordResetTokenSchema) as Model<
+  PasswordResetTokenDocument,
+  {},
+  Methods
+>;

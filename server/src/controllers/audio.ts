@@ -1,9 +1,9 @@
+import { PopulatedFavList } from "#/@types/audio";
 import cloudinary from "#/cloud";
 import { RequestWithFiles } from "#/middleware/fileParser";
 import Audio from "#/models/audio";
 import { categoriesTypes } from "#/utils/audio_category";
 import { RequestHandler } from "express";
-import formidable from "formidable";
 
 interface CreateAudioRequest extends RequestWithFiles {
   body: {
@@ -114,4 +114,25 @@ export const updateAudio: RequestHandler = async (
   } catch (error) {
     res.status(500).json({ error });
   }
+};
+
+export const getLatestUploads: RequestHandler = async (req, res) => {
+  const list = await Audio.find()
+    .sort("-createdAt")
+    .limit(10)
+    .populate<PopulatedFavList>("owner");
+
+  const audios = list.map((item) => {
+    return {
+      id: item._id,
+      title: item.title,
+      about: item.about,
+      category: item.category,
+      file: item.file.url,
+      poster: item.poster?.url,
+      owner: { name: item.owner.name, id: item.owner._id },
+    };
+  });
+
+  res.json({ audios });
 };
