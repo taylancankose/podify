@@ -21,3 +21,16 @@ export const signupSchema = yup.object({
     )
     .required('Password is required'),
 });
+
+export const signinSchema = yup.object({
+  email: yup
+    .string()
+    .trim('Email is missing')
+    .email('Invalid email address')
+    .required('Email is required'),
+  password: yup
+    .string()
+    .trim('Password is missing')
+    .min(8, 'Password should be at least 8 characters')
+    .required('Password is required'),
+});

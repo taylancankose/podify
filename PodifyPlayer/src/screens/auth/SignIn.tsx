@@ -2,41 +2,35 @@ import React, {FC, useState} from 'react';
 import {SafeAreaView, StyleSheet, View} from 'react-native';
 import colors from '@utils/colors';
 import Form from '@components/form';
-import {signupSchema} from '@utils/schemas';
+import {signinSchema} from '@utils/schemas';
 import AuthInputField from '@components/form/AuthInputField';
 import SubmitBtn from '@components/form/SubmitBtn';
 import PasswordIcon from '@ui/PasswordIcon';
 import AppLink from '@ui/AppLink';
 import AuthFormContainer from '@components/form/AuthFormContainer';
 
-interface Props {}
-
 const initialValues = {
-  name: '',
   email: '',
   password: '',
 };
 
-const SignUp: FC<Props> = props => {
+interface Props {}
+
+const SignIn: FC<Props> = props => {
   const [secureEntry, setSecureEntry] = useState(true);
+
   return (
     <SafeAreaView style={styles.container}>
       <AuthFormContainer
-        title="Welcome!"
+        title="Welcome Back!"
         subtitle="Let's get started by creating your account.">
         <Form
           initialValues={initialValues}
           onSubmit={values => {
             console.log(values);
           }}
-          validationSchema={signupSchema}>
+          validationSchema={signinSchema}>
           <View style={styles.formContainer}>
-            <AuthInputField
-              name="name"
-              placeholder="John Doe"
-              label="Name"
-              containerStyle={styles.marginBottom}
-            />
             <AuthInputField
               name="email"
               placeholder="john@email.com"
@@ -55,10 +49,11 @@ const SignUp: FC<Props> = props => {
               rightIcon={<PasswordIcon privateIcon={secureEntry} />}
               onRightIconPress={() => setSecureEntry(!secureEntry)}
             />
-            <SubmitBtn title="Sign Up" />
+            <SubmitBtn title="Sign In" />
 
             <View style={styles.linkContainer}>
-              <AppLink title="Already have an account?" />
+              <AppLink title="I forgot my password" />
+              <AppLink title="Don't have an account?" />
             </View>
           </View>
         </Form>
@@ -83,9 +78,8 @@ const styles = StyleSheet.create({
   linkContainer: {
     alignItems: 'center',
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     marginTop: 14,
   },
 });
-
-export default SignUp;
+export default SignIn;

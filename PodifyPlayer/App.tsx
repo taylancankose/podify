@@ -1,8 +1,8 @@
-import SignUp from '@screens/auth/SignUp';
+import SignIn from '@screens/auth/SignIn';
 import React from 'react';
 
 function App() {
-  return <SignUp />;
+  return <SignIn />;
 }
 
 export default App;
