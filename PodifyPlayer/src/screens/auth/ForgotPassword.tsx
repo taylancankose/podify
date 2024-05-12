@@ -7,6 +7,8 @@ import AuthInputField from '@components/form/AuthInputField';
 import SubmitBtn from '@components/form/SubmitBtn';
 import AppLink from '@ui/AppLink';
 import AuthFormContainer from '@components/form/AuthFormContainer';
+import {ParamListBase, useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 const initialValues = {
   email: '',
@@ -15,6 +17,8 @@ const initialValues = {
 interface Props {}
 
 const ForgotPassword: FC<Props> = props => {
+  const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
+
   return (
     <SafeAreaView style={styles.container}>
       <AuthFormContainer
@@ -38,7 +42,10 @@ const ForgotPassword: FC<Props> = props => {
             <SubmitBtn title="Send Link" />
 
             <View style={styles.linkContainer}>
-              <AppLink title="Sign In" />
+              <AppLink
+                title="Sign In"
+                onPress={() => navigation.navigate('Sign in')}
+              />
             </View>
           </View>
         </Form>

@@ -1,8 +1,13 @@
-import Verification from '@screens/auth/Verification';
+import {NavigationContainer} from '@react-navigation/native';
 import React from 'react';
+import AuthNavigator from 'src/navigation/AuthNavigator';
 
 function App() {
-  return <Verification />;
+  return (
+    <NavigationContainer>
+      <AuthNavigator />
+    </NavigationContainer>
+  );
 }
 
 export default App;
