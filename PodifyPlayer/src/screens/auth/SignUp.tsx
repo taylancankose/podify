@@ -1,4 +1,4 @@
-import React, {FC, useState} from 'react';
+import React, {FC, act, useState} from 'react';
 import {SafeAreaView, StyleSheet, View} from 'react-native';
 import colors from '@utils/colors';
 import Form from '@components/form';
@@ -10,8 +10,15 @@ import AppLink from '@ui/AppLink';
 import AuthFormContainer from '@components/form/AuthFormContainer';
 import {ParamListBase, useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import client from 'src/api/client';
 
 interface Props {}
+
+interface newUser {
+  name: string;
+  email: string;
+  password: string;
+}
 
 const initialValues = {
   name: '',
@@ -23,6 +30,20 @@ const SignUp: FC<Props> = props => {
   const [secureEntry, setSecureEntry] = useState(true);
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
 
+  const handleSubmit = async (values: newUser, actions) => {
+    actions.setSubmitting(true);
+    try {
+      const {data} = await client.post('/auth/create', values);
+
+      navigation.navigate('Verification', {
+        userInfo: data.user,
+      });
+    } catch (error) {
+      console.log('Signup error:', error);
+    }
+    actions.setSubmitting(false);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <AuthFormContainer
@@ -30,9 +51,7 @@ const SignUp: FC<Props> = props => {
         subtitle="Let's get started by creating your account.">
         <Form
           initialValues={initialValues}
-          onSubmit={values => {
-            console.log(values);
-          }}
+          onSubmit={handleSubmit}
           validationSchema={signupSchema}>
           <View style={styles.formContainer}>
             <AuthInputField

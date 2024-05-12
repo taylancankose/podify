@@ -15,14 +15,21 @@ import crypto from "crypto";
 import { JWT_SECRET, PASSWORD_RESET_LINK } from "#/utils/variables";
 import jwt from "jsonwebtoken";
 import cloudinary from "#/cloud";
+import formidable from "formidable";
 
 export const create: RequestHandler = async (req: CreateUser, res) => {
   const { email, password, name } = req.body;
+
+  const oldUser = await User.findOne({ email });
+
+  if (oldUser)
+    return res.status(403).json({ error: "Email is already in use!" });
 
   const user = await User.create({ email, password, name });
 
   // SEND VERIFICATION EMAIL
   const token = generateToken(4);
+  console.log(token);
   await emailVerificationToken.create({
     owner: user._id,
     token,
@@ -46,13 +53,16 @@ export const verifyEmail: RequestHandler = async (
   if (!verificationToken)
     return res.status(403).json({ error: "Invalid token" });
 
-  const matched = await verificationToken.compareToken(token);
   if (!verificationToken)
     return res.status(403).json({ error: "Token is mismatched" });
+
+  const matched = await verificationToken.compareToken(token);
+  if (!matched) return res.status(403).json({ error: "Invalid token!" });
 
   await User.findByIdAndUpdate(userId, {
     verified: true,
   });
+
   await EmailVerificationToken.findByIdAndDelete(verificationToken._id);
 
   res.json({ message: "Successfully verified!" });
@@ -70,21 +80,24 @@ export const sendReVerificationToken: RequestHandler = async (req, res) => {
 
   if (!user) return res.status(403).json({ error: "Invalid Request" });
 
+  if (user.verified)
+    return res.status(422).json({ error: "Your account is already verified!" });
+
   // removing previous verification token if there is one already
   await EmailVerificationToken.findOneAndDelete({
     owner: userId,
   });
 
   // generate new verification token
-  const newToken = generateToken();
+  const token = generateToken();
   // store new verification token in mongo db
   await EmailVerificationToken.create({
     owner: userId,
-    token: newToken,
+    token,
   });
 
   // send mail this newToken
-  sendVerificationMail(newToken, {
+  sendVerificationMail(token, {
     name: user?.name,
     email: user?.email,
     userId: user?._id.toString(),
@@ -116,7 +129,7 @@ export const generateForgetPasswordLink: RequestHandler = async (req, res) => {
 
   const resetLink = `${PASSWORD_RESET_LINK}?token=${token}&userId=${user._id}`;
 
-  sendForgetPasswordLink({ email, link: resetLink });
+  sendForgetPasswordLink({ email: user.email, link: resetLink });
 
   res.json({ message: "Check your registered mail." });
 };
@@ -194,26 +207,25 @@ export const login: RequestHandler = async (req, res) => {
 
 export const updateProfile: RequestHandler = async (req, res) => {
   const { name } = req.body;
-  const userName = name[0];
-  const files = req.files?.avatar as formidable.File[];
-  const avatar = files[0];
+  const avatar = req.files?.avatar as formidable.File;
 
   const user = await User.findById(req.user.id);
   if (!user) throw new Error("something went wrong, user not found!");
 
-  if (typeof userName !== "string")
+  if (typeof name !== "string")
     return res.status(422).json({ error: "Invalid name!" });
 
-  if (userName.trim().length < 3)
+  if (name.trim().length < 3)
     return res.status(422).json({ error: "Invalid name!" });
 
-  user.name = userName;
+  user.name = name;
 
   if (avatar) {
     // if there is already an avatar file, we want to remove that
     if (user.avatar?.publicId) {
-      await cloudinary.uploader.destroy(user.avatar.publicId);
+      await cloudinary.uploader.destroy(user.avatar?.publicId);
     }
+
     // upload new avatar file
     const { secure_url, public_id } = await cloudinary.uploader.upload(
       avatar.filepath,

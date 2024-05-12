@@ -1,27 +1,28 @@
 import React, {FC, useEffect, useRef, useState} from 'react';
-import {
-  Keyboard,
-  SafeAreaView,
-  StyleSheet,
-  TextInput,
-  View,
-} from 'react-native';
+import {SafeAreaView, StyleSheet, TextInput, View} from 'react-native';
 import colors from '@utils/colors';
 import AppLink from '@ui/AppLink';
 import AuthFormContainer from '@components/form/AuthFormContainer';
 import OTPField from '@ui/OTPField';
 import AppButton from '@ui/AppButton';
+import {ParamListBase, useNavigation, useRoute} from '@react-navigation/native';
+import client from 'src/api/client';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 interface Props {}
 
-const otpFields = new Array(6).fill('');
+const otpFields = new Array(4).fill('');
 
 const Verification: FC<Props> = props => {
   const [otp, setOtp] = useState([...otpFields]);
   const [activeOTP, setActiveOTP] = useState(0);
-
+  const [loading, setLoading] = useState(false);
+  const route = useRoute();
+  const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const inputRef = useRef<TextInput>(null);
   const filledOTPs = otp.filter(o => o !== '');
+
+  const {userInfo} = route.params;
 
   const handleChange = (value: string, i: number) => {
     const newOtp = [...otp];
@@ -37,9 +38,24 @@ const Verification: FC<Props> = props => {
     setOtp([...newOtp]);
   };
 
-  const handleSubmit = () => {
-    console.log(otp);
-    console.log(filledOTPs);
+  const isValidOtp = otp.every(value => {
+    return value.trim();
+  });
+
+  const handleSubmit = async () => {
+    if (!isValidOtp) return;
+    setLoading(true);
+    try {
+      const {data} = await client.post('/auth/verify-email', {
+        userId: userInfo.id,
+        token: otp.join(''),
+      });
+
+      navigation.navigate('sign in');
+    } catch (error) {
+      console.log(error);
+    }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -54,6 +70,7 @@ const Verification: FC<Props> = props => {
             {otpFields.map((_, i) => {
               return (
                 <OTPField
+                  style={{marginRight: 24}}
                   ref={activeOTP === i ? inputRef : null}
                   key={i}
                   placeholder="*"
@@ -69,13 +86,13 @@ const Verification: FC<Props> = props => {
           </View>
 
           <AppButton
-            title="Send Link"
+            title="Verify"
             onPress={handleSubmit}
-            disabled={filledOTPs.length < 6}
+            disabled={filledOTPs.length < 3}
           />
 
           <View style={styles.linkContainer}>
-            <AppLink title="Resend OTP" />
+            <AppLink loading={loading} title="Resend OTP" />
           </View>
         </View>
       </AuthFormContainer>
@@ -99,7 +116,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     width: '100%',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
     paddingVertical: 20,
     marginBottom: 20,

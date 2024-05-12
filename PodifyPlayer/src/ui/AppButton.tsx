@@ -1,11 +1,13 @@
 import colors from '@utils/colors';
 import React, {FC} from 'react';
 import {StyleSheet, Pressable, Text} from 'react-native';
+import Loader from './Loader';
 
 interface Props {
   title: string;
   onPress?(): void;
   disabled?: boolean;
+  loading?: boolean;
 }
 
 const AppButton: FC<Props> = props => {
@@ -14,7 +16,11 @@ const AppButton: FC<Props> = props => {
       onPress={props.onPress}
       style={styles.container}
       disabled={props.disabled}>
-      <Text style={styles.title}>{props.title}</Text>
+      {!props.loading ? (
+        <Text style={styles.title}>{props.title}</Text>
+      ) : (
+        <Loader />
+      )}
     </Pressable>
   );
 };

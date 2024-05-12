@@ -269,9 +269,9 @@ export const generateTemplate = (options: Options) => {
 							</tr>
 						</tbody>
 					</table>
-					${
-            !code === undefined &&
-            `<table class="row row-5" align="center" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+					
+           
+            <table class="row row-5" align="center" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
 						<tbody>
 							<tr>
 								<td>
@@ -320,14 +320,12 @@ export const generateTemplate = (options: Options) => {
 													<tr>
 														<td class="pad" style="padding-bottom:32px;">
 															<div style="color:#555555;font-family:Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif;font-size:38px;line-height:120%;text-align:center;mso-line-height-alt:45.6px;">
-																<p style="margin: 0; word-break: break-word;"><span style="color:#1aa19c;"><span><strong>${
-                                  code && code
-                                }</strong></span></span></p>
+																<p style="margin: 0; word-break: break-word;"><span style="color:#1aa19c;"><span><strong>${code}</strong></span></span></p>
 															</div>
 														</td>
 													</tr>
-												</table>`
-          }
+												</table>
+    
 												</td>
 											</tr>
 										</tbody>
