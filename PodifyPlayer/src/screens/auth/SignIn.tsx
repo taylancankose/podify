@@ -12,6 +12,9 @@ import {ParamListBase, useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import client from 'src/api/client';
 import {FormikHelpers} from 'formik';
+import {updateLoggedIn, updateProfile} from 'src/store/auth';
+import {useDispatch} from 'react-redux';
+import {Keys, saveToAsyncStorage} from '@utils/asyncStorage';
 
 const initialValues = {
   email: '',
@@ -26,6 +29,7 @@ interface newUser {
 interface Props {}
 
 const SignIn: FC<Props> = props => {
+  const dispatch = useDispatch();
   const [secureEntry, setSecureEntry] = useState(true);
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
 
@@ -34,7 +38,10 @@ const SignIn: FC<Props> = props => {
     try {
       const {data} = await client.post('/auth/login', values);
 
-      console.log(data);
+      await saveToAsyncStorage(Keys.AUTH_TOKEN, data.token);
+
+      dispatch(updateProfile(data.profile));
+      dispatch(updateLoggedIn(true));
     } catch (error) {
       console.log('Signup error:', error);
     }

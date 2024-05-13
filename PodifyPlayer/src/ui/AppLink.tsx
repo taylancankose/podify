@@ -8,11 +8,14 @@ interface Props {
   title: string;
   onPress?(): void;
   loading?: boolean;
+  active?: boolean;
 }
 
-const AppLink: FC<Props> = ({title, onPress, loading}) => {
+const AppLink: FC<Props> = ({title, onPress, loading, active = true}) => {
   return (
-    <Pressable onPress={onPress}>
+    <Pressable
+      onPress={active ? onPress : null}
+      style={{opacity: active ? 1 : 0.4}}>
       {!loading ? <Text style={styles.title}>{title}</Text> : <Loader />}
     </Pressable>
   );

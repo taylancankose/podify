@@ -1,6 +1,5 @@
 import React, {FC} from 'react';
-import {SafeAreaView, StyleSheet, View} from 'react-native';
-import colors from '@utils/colors';
+import {Pressable, StyleSheet, Text, View} from 'react-native';
 import Form from '@components/form';
 import {forgetPasswordSchema} from '@utils/schemas';
 import AuthInputField from '@components/form/AuthInputField';
@@ -9,58 +8,62 @@ import AppLink from '@ui/AppLink';
 import AuthFormContainer from '@components/form/AuthFormContainer';
 import {ParamListBase, useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import client from 'src/api/client';
 
 const initialValues = {
   email: '',
 };
 
+interface initialValue {
+  email: string;
+}
+
 interface Props {}
 
 const ForgotPassword: FC<Props> = props => {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
+  const handleSubmit = async (values: initialValue, actions) => {
+    actions.setSubmitting(true);
+    try {
+      const {data} = await client.post('/auth/forget-password', {...values});
+    } catch (error) {
+      console.log('forget password error:', error);
+    }
+    actions.setSubmitting(true);
+  };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <Form
+      onSubmit={handleSubmit}
+      initialValues={initialValues}
+      validationSchema={forgetPasswordSchema}>
       <AuthFormContainer
         title="Forget Password"
         subtitle="Oops, did you forget your password? Don't worry, we'll help you to get back in.">
-        <Form
-          initialValues={initialValues}
-          onSubmit={values => {
-            console.log(values);
-          }}
-          validationSchema={forgetPasswordSchema}>
-          <View style={styles.formContainer}>
-            <AuthInputField
-              name="email"
-              placeholder="john@email.com"
-              label="Email"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              containerStyle={styles.marginBottom}
-            />
-            <SubmitBtn title="Send Link" />
+        <View style={styles.formContainer}>
+          <AuthInputField
+            name="email"
+            placeholder="john@email.com"
+            label="Email"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            containerStyle={styles.marginBottom}
+          />
+          <SubmitBtn title="Send Link" />
 
-            <View style={styles.linkContainer}>
-              <AppLink
-                title="Sign In"
-                onPress={() => navigation.navigate('Sign in')}
-              />
-            </View>
+          <View style={styles.linkContainer}>
+            <AppLink
+              title="Sign In"
+              onPress={() => navigation.navigate('SignIn')}
+            />
           </View>
-        </Form>
+        </View>
       </AuthFormContainer>
-    </SafeAreaView>
+    </Form>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.PRIMARY,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   formContainer: {
     width: '100%',
   },

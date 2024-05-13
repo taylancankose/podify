@@ -1,5 +1,5 @@
 import React, {FC, useEffect, useRef, useState} from 'react';
-import {SafeAreaView, StyleSheet, TextInput, View} from 'react-native';
+import {SafeAreaView, StyleSheet, Text, TextInput, View} from 'react-native';
 import colors from '@utils/colors';
 import AppLink from '@ui/AppLink';
 import AuthFormContainer from '@components/form/AuthFormContainer';
@@ -17,6 +17,8 @@ const Verification: FC<Props> = props => {
   const [otp, setOtp] = useState([...otpFields]);
   const [activeOTP, setActiveOTP] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [countDown, setCountDown] = useState(30);
+  const [canSendNewOTP, setCanSendNewOTP] = useState(false);
   const route = useRoute();
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const inputRef = useRef<TextInput>(null);
@@ -41,7 +43,6 @@ const Verification: FC<Props> = props => {
   const isValidOtp = otp.every(value => {
     return value.trim();
   });
-
   const handleSubmit = async () => {
     if (!isValidOtp) return;
     setLoading(true);
@@ -50,10 +51,9 @@ const Verification: FC<Props> = props => {
         userId: userInfo.id,
         token: otp.join(''),
       });
-
-      navigation.navigate('sign in');
+      navigation.navigate('SignIn');
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
     }
     setLoading(false);
   };
@@ -61,6 +61,35 @@ const Verification: FC<Props> = props => {
   useEffect(() => {
     inputRef.current?.focus();
   }, [activeOTP]);
+
+  useEffect(() => {
+    if (canSendNewOTP) return;
+
+    const intervalId = setInterval(() => {
+      setCountDown(old => {
+        if (old <= 0) {
+          setCanSendNewOTP(true);
+          clearInterval(intervalId);
+          return 0;
+        }
+        return old - 1;
+      });
+    }, 1000);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [canSendNewOTP]);
+
+  const requestForOTP = async () => {
+    try {
+      await client.post('/auth/re-verify-email', {userId: userInfo.id});
+      setCountDown(30);
+      setCanSendNewOTP(false);
+    } catch (error) {
+      console.log('requestForOTP', error.message);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -92,7 +121,15 @@ const Verification: FC<Props> = props => {
           />
 
           <View style={styles.linkContainer}>
-            <AppLink loading={loading} title="Resend OTP" />
+            {countDown > 0 ? (
+              <Text style={styles.countdown}>{countDown} sec</Text>
+            ) : null}
+            <AppLink
+              loading={loading}
+              title="Resend OTP"
+              onPress={requestForOTP}
+              active={canSendNewOTP}
+            />
           </View>
         </View>
       </AuthFormContainer>
@@ -125,6 +162,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     marginTop: 14,
+  },
+  countdown: {
+    color: colors.SECONDARY,
+    marginRight: 7,
   },
 });
 export default Verification;

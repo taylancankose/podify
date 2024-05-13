@@ -29,7 +29,6 @@ export const create: RequestHandler = async (req: CreateUser, res) => {
 
   // SEND VERIFICATION EMAIL
   const token = generateToken(4);
-  console.log(token);
   await emailVerificationToken.create({
     owner: user._id,
     token,
@@ -55,9 +54,6 @@ export const verifyEmail: RequestHandler = async (
 
   if (!verificationToken)
     return res.status(403).json({ error: "Token is mismatched" });
-
-  const matched = await verificationToken.compareToken(token);
-  if (!matched) return res.status(403).json({ error: "Invalid token!" });
 
   await User.findByIdAndUpdate(userId, {
     verified: true,
@@ -89,7 +85,7 @@ export const sendReVerificationToken: RequestHandler = async (req, res) => {
   });
 
   // generate new verification token
-  const token = generateToken();
+  const token = generateToken(4);
   // store new verification token in mongo db
   await EmailVerificationToken.create({
     owner: userId,
@@ -110,28 +106,26 @@ export const generateForgetPasswordLink: RequestHandler = async (req, res) => {
   const { email } = req.body;
 
   const user = await User.findOne({ email });
+  if (!user) return res.status(404).json({ error: "Account not found!" });
 
-  if (!user) return res.status(404).json({ message: "User not found" });
-
-  // generate new password link
-  // https://yourapp.com/reset-password?token=yourToken&userId=yourUserId when you click this link you will control the route and verify
+  // generate the link
+  // https://yourapp.com/reset-passwod?token=hfkshf4322hfjkds&userId=67jhfdsahf43
 
   await PasswordResetToken.findOneAndDelete({
     owner: user._id,
   });
 
   const token = crypto.randomBytes(36).toString("hex");
-
   await PasswordResetToken.create({
     owner: user._id,
-    token,
+    token: token,
   });
 
   const resetLink = `${PASSWORD_RESET_LINK}?token=${token}&userId=${user._id}`;
 
   sendForgetPasswordLink({ email: user.email, link: resetLink });
 
-  res.json({ message: "Check your registered mail." });
+  res.json({ message: "Check you registered mail." });
 };
 
 export const grantValid: RequestHandler = (req, res) => {
