@@ -1,4 +1,5 @@
 import * as yup from 'yup';
+import {categories} from './audio_category';
 
 export const signupSchema = yup.object({
   name: yup
@@ -41,4 +42,22 @@ export const forgetPasswordSchema = yup.object({
     .trim('Password is missing')
     .min(8, 'Password should be at least 8 characters')
     .required('Password is required'),
+});
+
+export const audioInfoSchema = yup.object().shape({
+  title: yup.string().trim().required('Title is missing'),
+  category: yup.string().oneOf(categories).required('Category is missing'),
+  about: yup.string().trim().required('About is missing'),
+  file: yup.object().shape({
+    uri: yup.string().required('Audio file is missing!'),
+    name: yup.string().required('Audio file is missing!'),
+    type: yup.string().required('Audio file is missing!'),
+    size: yup.number().required('Audio file is missing!'),
+  }),
+  poster: yup.object().shape({
+    uri: yup.string(),
+    name: yup.string(),
+    type: yup.string(),
+    size: yup.number(),
+  }),
 });

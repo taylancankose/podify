@@ -22,12 +22,14 @@ export const createAudio: RequestHandler = async (
     const poster = req.files?.poster;
     const audioFile = req.files?.file;
     const ownerId = req.user.id;
+
     if (!audioFile)
       return res.status(422).json({ error: "Audio file is missing!" });
 
     const audioRes = await cloudinary.uploader.upload(audioFile[0].filepath, {
       resource_type: "video",
     });
+
     const newAudio = new Audio({
       title: title[0],
       about: about[0],
@@ -35,7 +37,6 @@ export const createAudio: RequestHandler = async (
       owner: ownerId,
       file: { url: audioRes.url, publicId: audioRes.public_id },
     });
-
     if (poster) {
       const posterRes = await cloudinary.uploader.upload(poster[0].filepath, {
         width: 300,
