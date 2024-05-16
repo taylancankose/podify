@@ -9,6 +9,9 @@ import AuthFormContainer from '@components/form/AuthFormContainer';
 import {ParamListBase, useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import client from 'src/api/client';
+import catchError from 'src/api/catchError';
+import {updateNotification} from 'src/store/notification';
+import {useDispatch} from 'react-redux';
 
 const initialValues = {
   email: '',
@@ -22,11 +25,14 @@ interface Props {}
 
 const ForgotPassword: FC<Props> = props => {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
+  const dispatch = useDispatch();
   const handleSubmit = async (values: initialValue, actions) => {
     actions.setSubmitting(true);
     try {
       const {data} = await client.post('/auth/forget-password', {...values});
     } catch (error) {
+      const errorMsg = catchError(error);
+      dispatch(updateNotification({message: errorMsg, type: 'error'}));
       console.log('forget password error:', error);
     }
     actions.setSubmitting(true);

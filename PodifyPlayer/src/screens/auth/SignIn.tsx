@@ -15,6 +15,8 @@ import {FormikHelpers} from 'formik';
 import {updateLoggedIn, updateProfile} from 'src/store/auth';
 import {useDispatch} from 'react-redux';
 import {Keys, saveToAsyncStorage} from '@utils/asyncStorage';
+import catchError from 'src/api/catchError';
+import {updateNotification} from 'src/store/notification';
 
 const initialValues = {
   email: '',
@@ -43,7 +45,9 @@ const SignIn: FC<Props> = props => {
       dispatch(updateProfile(data.profile));
       dispatch(updateLoggedIn(true));
     } catch (error) {
-      console.log('Signup error:', error);
+      const errorMsg = catchError(error);
+      dispatch(updateNotification({message: errorMsg, type: 'error'}));
+      console.log('Signin error:', error);
     }
     actions.setSubmitting(true);
   };

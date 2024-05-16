@@ -18,7 +18,10 @@ import {
 } from 'react-native';
 import {DocumentPickerResponse, types} from 'react-native-document-picker';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {useDispatch} from 'react-redux';
+import catchError from 'src/api/catchError';
 import client from 'src/api/client';
+import {updateNotification} from 'src/store/notification';
 
 interface FormFields {
   title: string;
@@ -43,7 +46,7 @@ const Upload: FC<Props> = props => {
   const [audioInfo, setAudioInfo] = useState(defaultForm);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [loading, setLoading] = useState(false);
-
+  const dispatch = useDispatch();
   const handleUpload = async () => {
     setLoading(true);
     try {
@@ -91,6 +94,8 @@ const Upload: FC<Props> = props => {
       });
       console.log(res.data);
     } catch (error) {
+      const errorMsg = catchError(error);
+      dispatch(updateNotification({message: errorMsg, type: 'error'}));
       console.log(error);
     }
     setLoading(false);

@@ -8,6 +8,9 @@ import AppButton from '@ui/AppButton';
 import {ParamListBase, useNavigation, useRoute} from '@react-navigation/native';
 import client from 'src/api/client';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import catchError from 'src/api/catchError';
+import {updateNotification} from 'src/store/notification';
+import {useDispatch} from 'react-redux';
 
 interface Props {}
 
@@ -20,6 +23,7 @@ const Verification: FC<Props> = props => {
   const [countDown, setCountDown] = useState(30);
   const [canSendNewOTP, setCanSendNewOTP] = useState(false);
   const route = useRoute();
+  const dispatch = useDispatch();
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const inputRef = useRef<TextInput>(null);
   const filledOTPs = otp.filter(o => o !== '');
@@ -44,15 +48,23 @@ const Verification: FC<Props> = props => {
     return value.trim();
   });
   const handleSubmit = async () => {
-    if (!isValidOtp) return;
+    if (!isValidOtp)
+      return dispatch(
+        updateNotification({message: 'Invalid OTP', type: 'error'}),
+      );
     setLoading(true);
     try {
       const {data} = await client.post('/auth/verify-email', {
         userId: userInfo.id,
         token: otp.join(''),
       });
+
+      dispatch(updateNotification({message: data.message, type: 'success'}));
+
       navigation.navigate('SignIn');
     } catch (error) {
+      const errorMsg = catchError(error);
+      dispatch(updateNotification({message: errorMsg, type: 'error'}));
       console.log(error.message);
     }
     setLoading(false);
@@ -87,6 +99,8 @@ const Verification: FC<Props> = props => {
       setCountDown(30);
       setCanSendNewOTP(false);
     } catch (error) {
+      const errorMsg = catchError(error);
+      dispatch(updateNotification({message: errorMsg, type: 'error'}));
       console.log('requestForOTP', error.message);
     }
   };

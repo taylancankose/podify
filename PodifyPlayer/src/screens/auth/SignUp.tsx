@@ -1,4 +1,4 @@
-import React, {FC, act, useState} from 'react';
+import React, {FC, useState} from 'react';
 import {SafeAreaView, StyleSheet, View} from 'react-native';
 import colors from '@utils/colors';
 import Form from '@components/form';
@@ -11,6 +11,9 @@ import AuthFormContainer from '@components/form/AuthFormContainer';
 import {ParamListBase, useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import client from 'src/api/client';
+import catchError from 'src/api/catchError';
+import {useDispatch} from 'react-redux';
+import {updateNotification} from 'src/store/notification';
 
 interface Props {}
 
@@ -29,6 +32,7 @@ const initialValues = {
 const SignUp: FC<Props> = props => {
   const [secureEntry, setSecureEntry] = useState(true);
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
+  const dispatch = useDispatch();
 
   const handleSubmit = async (values: newUser, actions) => {
     actions.setSubmitting(true);
@@ -39,6 +43,8 @@ const SignUp: FC<Props> = props => {
         userInfo: data.user,
       });
     } catch (error) {
+      const errorMsg = catchError(error);
+      dispatch(updateNotification({message: errorMsg, type: 'error'}));
       console.log('Signup error:', error);
     }
     actions.setSubmitting(false);
