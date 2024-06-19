@@ -22,3 +22,21 @@ export const useFetchLatestAudios = () => {
 
   return query;
 };
+
+const getRecommended = async (): Promise<AudioData[]> => {
+  const {data} = await client.get('/profile/recommended');
+  return data.audios;
+};
+
+export const usegetRecommendedAudios = () => {
+  const dispatch = useDispatch();
+  const query = useQuery(['recommended'], {
+    queryFn: () => getRecommended(),
+    onError(err) {
+      const errMsg = catchError(err);
+      dispatch(updateNotification({message: errMsg, type: 'error'}));
+    },
+  });
+
+  return query;
+};
