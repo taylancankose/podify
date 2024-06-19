@@ -58,18 +58,7 @@ const Navigator: FC<Props> = props => {
 
   return (
     <NavigationContainer theme={AppTheme}>
-      {loading ? (
-        <View
-          style={{
-            ...StyleSheet.absoluteFillObject,
-            backgroundColor: colors.OVERLAY,
-            justifyContent: 'center',
-            alignItems: 'center',
-            zIndex: 1,
-          }}>
-          <Loader />
-        </View>
-      ) : loggedIn ? (
+      {loggedIn ? (
         <AppNavigator />
       ) : (
         <AuthNavigator />

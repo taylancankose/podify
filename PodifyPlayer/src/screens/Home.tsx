@@ -1,29 +1,31 @@
+import LatestUploads from '@components/LatestUploads';
+import PulseContainer from '@ui/PulseContainer';
 import React, {FC} from 'react';
-import {View, Text, StyleSheet, Button} from 'react-native';
-import {useDispatch} from 'react-redux';
-import {updateNotification} from 'src/store/notification';
+import {View, Text, StyleSheet} from 'react-native';
+import {useFetchLatestAudios} from 'src/hooks/query';
 
 interface Props {}
 
 const Home: FC<Props> = props => {
-  const dispatch = useDispatch();
+  const {data, isLoading} = useFetchLatestAudios();
+  if (isLoading)
+    return (
+      <PulseContainer style={styles.container}>
+        <Text style={{color: 'white', fontSize: 25}}>Loading</Text>
+      </PulseContainer>
+    );
+
   return (
     <View style={styles.container}>
-      <Text>Home</Text>
-      <Button
-        title="Test"
-        onPress={() =>
-          dispatch(
-            updateNotification({message: 'Test message', type: 'success'}),
-          )
-        }
-      />
+      <LatestUploads />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    padding: 15,
+  },
 });
 
 export default Home;

@@ -104,7 +104,7 @@ const Verification: FC<Props> = props => {
       console.log('requestForOTP', error.message);
     }
   };
-
+  console.log(filledOTPs)
   return (
     <SafeAreaView style={styles.container}>
       <AuthFormContainer title="Check your email">
