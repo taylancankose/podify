@@ -39,7 +39,7 @@ const SignIn: FC<Props> = props => {
     actions.setSubmitting(true);
     try {
       const {data} = await client.post('/auth/login', values);
-
+      console.log(data);
       await saveToAsyncStorage(Keys.AUTH_TOKEN, data.token);
 
       dispatch(updateProfile(data.profile));

@@ -3,13 +3,17 @@ import PulseContainer from '@ui/PulseContainer';
 import colors from '@utils/colors';
 import React, {FC} from 'react';
 import {View, Text, StyleSheet, Image, Pressable} from 'react-native';
+import {AudioData} from 'src/@types/audio';
 import {usegetRecommendedAudios} from 'src/hooks/query';
 
-interface Props {}
+interface Props {
+  onAudioPress(item: AudioData, data: AudioData[]): void;
+  onAudioLongPress(item: AudioData, data: AudioData[]): void;
+}
 
 const dummyData = new Array(6).fill('');
-const RecommendedAudios: FC<Props> = props => {
-  const {data, isLoading} = usegetRecommendedAudios();
+const RecommendedAudios: FC<Props> = ({onAudioPress, onAudioLongPress}) => {
+  const {data = [], isLoading} = usegetRecommendedAudios();
 
   const getPoster = (poster?: string) => {
     return poster ? {uri: poster} : require('../assets/music.png');
@@ -36,7 +40,9 @@ const RecommendedAudios: FC<Props> = props => {
         data={data || []}
         renderItem={item => {
           return (
-            <Pressable>
+            <Pressable
+              onPress={() => onAudioPress(item, data)}
+              onLongPress={() => onAudioLongPress(item, data)}>
               <Image source={getPoster(item.poster)} style={styles.poster} />
               <Text
                 ellipsizeMode="tail"

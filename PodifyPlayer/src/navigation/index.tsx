@@ -58,11 +58,7 @@ const Navigator: FC<Props> = props => {
 
   return (
     <NavigationContainer theme={AppTheme}>
-      {loggedIn ? (
-        <AppNavigator />
-      ) : (
-        <AuthNavigator />
-      )}
+      {loggedIn ? <AppNavigator /> : <AuthNavigator />}
     </NavigationContainer>
   );
 };
