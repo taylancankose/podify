@@ -5,14 +5,14 @@ import React, {FC, useState} from 'react';
 import {View, Text, StyleSheet, Pressable} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from '@utils/colors';
-import {AudioData} from 'src/@types/audio';
-import client from 'src/api/client';
-import {Keys, getFromAsyncStorage} from '@utils/asyncStorage';
+import {AudioData, Playlist} from 'src/@types/audio';
+import {getClient} from 'src/api/client';
 import catchError from 'src/api/catchError';
 import {useDispatch} from 'react-redux';
 import {updateNotification} from 'src/store/notification';
 import PlaylistModal from '@components/PlaylistModal';
-import PlaylistForm from '@components/form/PlaylistForm';
+import PlaylistForm, {PlaylistInfo} from '@components/form/PlaylistForm';
+import {useGetPlaylist} from 'src/hooks/query';
 
 interface Props {}
 
@@ -22,22 +22,18 @@ const Home: FC<Props> = props => {
   const [showPlaylistsModal, setShowPlaylistsModal] = useState(false);
   const [showPlaylistForm, setShowPlaylistForm] = useState(false);
 
+  const {data} = useGetPlaylist();
+
   const dispatch = useDispatch();
 
   const handleFavoritePress = async () => {
     if (!selectedAudio) return;
 
     try {
-      const token = await getFromAsyncStorage(Keys.AUTH_TOKEN);
+      const client = await getClient();
 
       const response = await client.post(
         `/favorite?audioId=${selectedAudio.id}`,
-        null,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
       );
 
       setSelectedAudio(undefined);
@@ -57,6 +53,43 @@ const Home: FC<Props> = props => {
   const handleAddToPlaylist = () => {
     setShowOptions(false);
     setShowPlaylistsModal(true);
+  };
+
+  const handlePlaylistSubmit = async (value: PlaylistInfo) => {
+    if (!value.title.trim()) return;
+    try {
+      const client = await getClient();
+      const {data} = await client.post('/playlist/create', {
+        resId: selectedAudio?.id,
+        title: value.title,
+        visibility: value.private ? 'private' : 'public',
+      });
+      console.log(data);
+    } catch (error) {
+      const errMsg = catchError(error);
+      console.log(errMsg);
+    }
+  };
+
+  const updatePlaylist = async (item: Playlist) => {
+    try {
+      const client = await getClient();
+      const {data} = await client.patch('/playlist', {
+        id: item.id,
+        item: selectedAudio?.id,
+        title: item.title,
+        visibility: item.visibility,
+      });
+
+      setSelectedAudio(undefined);
+      setShowPlaylistsModal(false);
+      dispatch(
+        updateNotification({message: 'New audio added', type: 'success'}),
+      );
+    } catch (error) {
+      const errMsg = catchError(error);
+      console.log(errMsg);
+    }
   };
 
   return (
@@ -105,17 +138,19 @@ const Home: FC<Props> = props => {
         onRequestClose={() => {
           setShowPlaylistsModal(false);
         }}
-        list={[]}
+        list={data || []}
         onCreateNewPress={() => {
           setShowPlaylistsModal(false);
           setShowPlaylistForm(true);
         }}
+        onPlaylistPress={updatePlaylist}
       />
       <PlaylistForm
         visible={showPlaylistForm}
         onRequestClose={() => {
           setShowPlaylistForm(false);
         }}
+        onSubmit={handlePlaylistSubmit}
       />
     </View>
   );

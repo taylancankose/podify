@@ -11,6 +11,7 @@ interface Props {
   onRequestClose(): void;
   list: Playlist[];
   onCreateNewPress(): void;
+  onPlaylistPress(item: Playlist): void;
 }
 
 interface ListItemProps {
@@ -33,6 +34,7 @@ const PlaylistModal: FC<Props> = ({
   onRequestClose,
   list,
   onCreateNewPress,
+  onPlaylistPress,
 }) => {
   return (
     <BasicModalContainer visible={visible} onRequestClose={onRequestClose}>
@@ -40,7 +42,7 @@ const PlaylistModal: FC<Props> = ({
         {list.map(item => (
           <ListItem
             key={item.id}
-            onPress={() => console.log(`Pressed ${item.title}`)} // Adjust this line as needed
+            onPress={() => onPlaylistPress(item)} // Adjust this line as needed
             title={item.title}
             icon={
               <FontAwesomeIcon

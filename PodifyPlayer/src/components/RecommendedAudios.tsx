@@ -14,7 +14,7 @@ interface Props {
 const dummyData = new Array(6).fill('');
 const RecommendedAudios: FC<Props> = ({onAudioPress, onAudioLongPress}) => {
   const {data = [], isLoading} = usegetRecommendedAudios();
-
+  console.log(data);
   const getPoster = (poster?: string) => {
     return poster ? {uri: poster} : require('../assets/music.png');
   };

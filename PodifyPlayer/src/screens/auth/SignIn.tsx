@@ -10,8 +10,7 @@ import AppLink from '@ui/AppLink';
 import AuthFormContainer from '@components/form/AuthFormContainer';
 import {ParamListBase, useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import client from 'src/api/client';
-import {FormikHelpers} from 'formik';
+import {getClient} from 'src/api/client';
 import {updateLoggedIn, updateProfile} from 'src/store/auth';
 import {useDispatch} from 'react-redux';
 import {Keys, saveToAsyncStorage} from '@utils/asyncStorage';
@@ -38,8 +37,9 @@ const SignIn: FC<Props> = props => {
   const handleSubmit = async (values: newUser, actions) => {
     actions.setSubmitting(true);
     try {
+      const client = await getClient();
+
       const {data} = await client.post('/auth/login', values);
-      console.log(data);
       await saveToAsyncStorage(Keys.AUTH_TOKEN, data.token);
 
       dispatch(updateProfile(data.profile));

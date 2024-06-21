@@ -1,4 +1,6 @@
-import { UserDocument } from "#/models/user";
+import { Request } from "express";
+import moment from "moment";
+import History from "#/models/history"; // Ensure the correct path to the model
 
 // default value 6
 export const generateToken = (length: number = 6) => {

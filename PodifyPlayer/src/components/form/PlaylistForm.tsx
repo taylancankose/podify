@@ -1,30 +1,58 @@
 import BasicModalContainer from '@ui/BasicModalContainer';
 import colors from '@utils/colors';
-import React, {FC} from 'react';
+import React, {FC, useState} from 'react';
 import {View, Text, StyleSheet, TextInput, Pressable} from 'react-native';
 import MaterialComIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-interface Props {
-  status: 'private';
-  visible: boolean;
-  onRequestClose(): void;
+export interface PlaylistInfo {
+  title: string;
+  private: boolean;
 }
 
-const PlaylistForm: FC<Props> = ({status, visible, onRequestClose}) => {
+interface Props {
+  visible: boolean;
+  onRequestClose(): void;
+  onSubmit(value: PlaylistInfo): void;
+}
+
+const PlaylistForm: FC<Props> = ({visible, onSubmit, onRequestClose}) => {
+  const [playlistInfo, setPlaylistInfo] = useState({
+    title: '',
+    private: false,
+  });
+
+  const handleSubmit = () => {
+    onSubmit(playlistInfo);
+    handleClose();
+  };
+
+  const handleClose = () => {
+    onRequestClose();
+    setPlaylistInfo({title: '', private: false});
+  };
   return (
-    <BasicModalContainer visible={visible} onRequestClose={onRequestClose}>
+    <BasicModalContainer visible={visible} onRequestClose={handleClose}>
       <View>
         <Text style={styles.title}>Create New Playlist</Text>
-        <TextInput placeholder="Title" style={styles.input} />
-        <Pressable style={styles.privateSelector}>
-          {status === 'private' ? (
+        <TextInput
+          onChangeText={text => setPlaylistInfo({...playlistInfo, title: text})}
+          placeholder="Title"
+          style={styles.input}
+          value={playlistInfo.title}
+        />
+        <Pressable
+          onPress={() =>
+            setPlaylistInfo({...playlistInfo, private: !playlistInfo.private})
+          }
+          style={styles.privateSelector}>
+          {playlistInfo.private ? (
             <MaterialComIcon name="radiobox-marked" color={colors.PRIMARY} />
           ) : (
             <MaterialComIcon name="radiobox-blank" color={colors.PRIMARY} />
           )}
           <Text style={styles.privateLabel}>Private</Text>
         </Pressable>
-        <Pressable style={styles.submitBtn}>
+        <Pressable onPress={handleSubmit} style={styles.submitBtn}>
           <Text style={styles.submitBtnLabel}>Create</Text>
         </Pressable>
       </View>

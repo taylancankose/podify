@@ -20,7 +20,7 @@ import {DocumentPickerResponse, types} from 'react-native-document-picker';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useDispatch} from 'react-redux';
 import catchError from 'src/api/catchError';
-import client from 'src/api/client';
+import {getClient} from 'src/api/client';
 import {updateNotification} from 'src/store/notification';
 
 interface FormFields {
@@ -68,13 +68,9 @@ const Upload: FC<Props> = props => {
           uri: data.poster.uri,
         });
       console.log(formData['_parts']);
-      const token = await getFromAsyncStorage(Keys.AUTH_TOKEN);
 
+      const client = await getClient({'Content-Type': 'multipart/form-data;'});
       const res = await client.post('/audio/create', formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data;',
-        },
         onUploadProgress(progressEvent) {
           const uploaded = mapRange({
             inputMin: 0,
