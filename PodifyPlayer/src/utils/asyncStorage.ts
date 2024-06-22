@@ -8,6 +8,10 @@ export const getFromAsyncStorage = async (key: string) => {
   return await AsyncStorage.getItem(key);
 };
 
+export const removeFromAsyncStorage = async (key: string) => {
+  return await AsyncStorage.removeItem(key);
+};
+
 export const clearAsyncStorage = async () => {
   await AsyncStorage.clear();
 };

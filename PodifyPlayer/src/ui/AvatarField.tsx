@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.SECONDARY,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 4,
+    borderWidth: 3,
     borderColor: colors.CONTRAST,
   },
 });

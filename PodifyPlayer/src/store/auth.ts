@@ -31,7 +31,7 @@ const slice = createSlice({
       authState.profile = payload;
     },
     updateLoggedIn(authState, {payload}) {
-      authState.loggedIn = true;
+      authState.loggedIn = payload;
     },
     updateLoading(authState, {payload}: PayloadAction<boolean>) {
       authState.loading = payload;
