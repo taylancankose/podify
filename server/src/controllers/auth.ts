@@ -205,24 +205,22 @@ export const updateProfile: RequestHandler = async (req, res) => {
 
   const user = await User.findById(req.user.id);
   if (!user) throw new Error("something went wrong, user not found!");
-
-  if (typeof name !== "string")
+  if (typeof name[0] !== "string")
     return res.status(422).json({ error: "Invalid name!" });
 
-  if (name.trim().length < 3)
+  if (name[0].trim().length < 3)
     return res.status(422).json({ error: "Invalid name!" });
 
-  user.name = name;
+  user.name = name[0];
 
   if (avatar) {
     // if there is already an avatar file, we want to remove that
     if (user.avatar?.publicId) {
       await cloudinary.uploader.destroy(user.avatar?.publicId);
     }
-
     // upload new avatar file
     const { secure_url, public_id } = await cloudinary.uploader.upload(
-      avatar.filepath,
+      avatar[0].filepath,
       {
         width: 300,
         height: 300,

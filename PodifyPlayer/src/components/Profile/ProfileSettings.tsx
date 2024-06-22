@@ -1,6 +1,6 @@
 import AvatarField from '@ui/AvatarField';
 import colors from '@utils/colors';
-import React, {FC} from 'react';
+import React, {FC, useEffect, useState} from 'react';
 import {View, Text, StyleSheet, Pressable, TextInput} from 'react-native';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -16,14 +16,31 @@ import {
   updateLoggedIn,
   updateProfile,
 } from 'src/store/auth';
-import {useNavigation} from '@react-navigation/native';
+import deepEqual = require('deep-equal');
+import ImagePicker from 'react-native-image-crop-picker';
+import {getImagePermissions} from '@utils/helper';
 
 interface Props {}
 
+interface ProfileInfo {
+  name: string;
+  avatar?: string;
+}
+
 const ProfileSettings: FC<Props> = props => {
   const dispatch = useDispatch();
-  const authState = useSelector(getAuthState);
-  console.log(authState);
+  const [userInfo, setUserInfo] = useState<ProfileInfo>({
+    name: '',
+  });
+
+  const [loading, setLoading] = useState(false);
+  const {profile} = useSelector(getAuthState);
+
+  const isSame = deepEqual(userInfo, {
+    name: profile.name,
+    avatar: profile.avatar,
+  });
+
   const handleLogout = async (fromAll?: boolean) => {
     dispatch(updateLoading(true));
     try {
@@ -40,6 +57,62 @@ const ProfileSettings: FC<Props> = props => {
     }
     dispatch(updateLoading(false));
   };
+
+  useEffect(() => {
+    if (profile) setUserInfo({name: profile.name, avatar: profile.avatar});
+  }, [profile]);
+
+  const handleSubmit = async () => {
+    setLoading(true);
+    try {
+      if (!userInfo.name.trim())
+        return dispatch(
+          updateNotification({
+            message: 'Profile name is required',
+            type: 'error',
+          }),
+        );
+
+      const formData = new FormData();
+      formData.append('name', userInfo.name);
+      if (userInfo.avatar) {
+        formData.append('avatar', {
+          name: 'avatar',
+          type: 'image/jpeg',
+          uri: userInfo.avatar,
+        });
+      }
+      const client = await getClient({'Content-Type': 'multipart/form-data'});
+      const {data} = await client.post('/auth/update-profile', formData);
+      dispatch(updateProfile(data.profile));
+      dispatch(
+        updateNotification({message: 'Profile is updated', type: 'success'}),
+      );
+    } catch (error) {
+      const errorMsg = catchError(error);
+      dispatch(updateNotification({message: errorMsg, type: 'error'}));
+    }
+    setLoading(false);
+  };
+
+  const handleImageSelect = async () => {
+    try {
+      await getImagePermissions();
+      const {path} = await ImagePicker.openPicker({
+        cropping: true,
+        width: 300,
+        height: 300,
+      });
+
+      setUserInfo({
+        ...userInfo,
+        avatar: path,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View>
@@ -48,24 +121,35 @@ const ProfileSettings: FC<Props> = props => {
         </View>
         <View style={styles.settingsContainer}>
           <View style={styles.avatarContainer}>
-            <AvatarField />
-            <Pressable style={styles.paddingLeft}>
+            <AvatarField source={userInfo.avatar} />
+            <Pressable onPress={handleImageSelect} style={styles.paddingLeft}>
               <Text style={styles.linkText}>Update Profile Image</Text>
             </Pressable>
           </View>
-          <TextInput style={styles.nameInput} value="John" />
+          <TextInput
+            onChangeText={text => setUserInfo({...userInfo, name: text})}
+            style={styles.nameInput}
+            value={userInfo.name}
+          />
           <View style={styles.emailContainer}>
-            <Text style={styles.email}>john@email.com</Text>
+            <Text style={styles.email}>{profile.email}</Text>
             <MaterialIcon name="verified" size={15} color={colors.SECONDARY} />
           </View>
         </View>
+        {isSame ? null : (
+          <View style={styles.marginTop}>
+            <AppButton
+              onPress={handleSubmit}
+              title="Update"
+              borderRadius={8}
+              loading={loading}
+            />
+          </View>
+        )}
       </View>
 
-      <View>
-        <View style={styles.titleContainer}>
-          <Text style={styles.logout}>Logout</Text>
-        </View>
-        <View style={styles.settingsContainer}>
+      <View style={{marginBottom: 10}}>
+        <View>
           <Pressable
             onPress={() => handleLogout(true)}
             style={styles.logoutBtn}>
@@ -77,10 +161,6 @@ const ProfileSettings: FC<Props> = props => {
             <AntDesign name="logout" size={24} color={colors.CONTRAST} />
             <Text style={styles.logoutBtnTitle}>Logout</Text>
           </Pressable>
-        </View>
-
-        <View style={styles.marginTop}>
-          <AppButton title="Update" borderRadius={8} />
         </View>
       </View>
     </View>
@@ -143,9 +223,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 16,
-    backgroundColor: colors.OVERLAY,
-    paddingVertical: 12,
-    borderRadius: 8,
     justifyContent: 'center',
   },
   logoutBtnTitle: {

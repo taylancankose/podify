@@ -4,13 +4,10 @@ import SignIn from '@screens/auth/SignIn';
 import SignUp from '@screens/auth/SignUp';
 import Verification from '@screens/auth/Verification';
 import React from 'react';
-import {useSelector} from 'react-redux';
-import {getAuthState} from 'src/store/auth';
 
 const Stack = createNativeStackNavigator();
 
 const AuthNavigator = () => {
-  const authState = useSelector(getAuthState);
   return (
     <Stack.Navigator
       screenOptions={{
