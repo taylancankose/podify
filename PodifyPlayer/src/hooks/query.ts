@@ -27,7 +27,6 @@ export const useFetchLatestAudios = () => {
 
 const getRecommended = async (): Promise<AudioData[]> => {
   const {data} = await client('/profile/recommended');
-  console.log(data);
   return data.audios;
 };
 
@@ -45,12 +44,7 @@ export const usegetRecommendedAudios = () => {
 
 const getPlaylist = async (): Promise<Playlist[]> => {
   const client = await getClient();
-  const token = await getFromAsyncStorage(Keys.AUTH_TOKEN);
-  const {data} = await client.get('/playlist/by-profile', {
-    headers: {
-      Authorization: 'Bearer ' + token,
-    },
-  });
+  const {data} = await client.get('/playlist/by-profile');
   return data.playlist;
 };
 
@@ -58,6 +52,26 @@ export const useGetPlaylist = () => {
   const dispatch = useDispatch();
   const query = useQuery(['playlist'], {
     queryFn: () => getPlaylist(),
+    onError(err) {
+      const errMsg = catchError(err);
+      dispatch(updateNotification({message: errMsg, type: 'error'}));
+    },
+  });
+
+  return query;
+};
+
+const getUploadsByProfile = async (): Promise<AudioData[]> => {
+  const client = await getClient();
+  const {data} = await client.get('/profile/uploads');
+
+  return data.audios;
+};
+
+export const useGetUploadsByProfile = () => {
+  const dispatch = useDispatch();
+  const query = useQuery(['uploads-by-profile'], {
+    queryFn: () => getUploadsByProfile(),
     onError(err) {
       const errMsg = catchError(err);
       dispatch(updateNotification({message: errMsg, type: 'error'}));

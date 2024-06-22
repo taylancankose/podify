@@ -64,7 +64,6 @@ const Home: FC<Props> = props => {
         title: value.title,
         visibility: value.private ? 'private' : 'public',
       });
-      console.log(data);
     } catch (error) {
       const errMsg = catchError(error);
       console.log(errMsg);
