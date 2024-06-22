@@ -80,3 +80,23 @@ export const useGetUploadsByProfile = () => {
 
   return query;
 };
+
+const getFavoritesByProfile = async (): Promise<AudioData[]> => {
+  const client = await getClient();
+  const {data} = await client.get('/favorite');
+
+  return data.audios;
+};
+
+export const useGetFavoritesByProfile = () => {
+  const dispatch = useDispatch();
+  const query = useQuery(['favorite'], {
+    queryFn: () => getFavoritesByProfile(),
+    onError(err) {
+      const errMsg = catchError(err);
+      dispatch(updateNotification({message: errMsg, type: 'error'}));
+    },
+  });
+
+  return query;
+};

@@ -1,18 +1,25 @@
+import PlaylistItem from '@ui/PlaylistItem';
 import React, {FC} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, ScrollView} from 'react-native';
+import {useGetPlaylist} from 'src/hooks/query';
 
 interface Props {}
 
 const PlaylistTab: FC<Props> = props => {
+  const {data, isLoading} = useGetPlaylist();
   return (
-    <View style={styles.container}>
-      <Text>PlaylistTab</Text>
-    </View>
+    <ScrollView style={styles.container}>
+      {data?.map(playlist => {
+        return <PlaylistItem key={playlist.id} playlist={playlist} />;
+      })}
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    padding: 10,
+  },
 });
 
 export default PlaylistTab;

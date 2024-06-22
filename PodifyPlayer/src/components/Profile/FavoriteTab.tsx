@@ -1,18 +1,36 @@
+import AudioListItem from '@ui/AudioListItem';
+import AudioListLoadingUI from '@ui/AudioListLoadingUI';
+import EmptyRecords from '@ui/EmptyRecords';
 import React, {FC} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {StyleSheet, ScrollView} from 'react-native';
+import {useGetFavoritesByProfile} from 'src/hooks/query';
 
 interface Props {}
 
 const FavoriteTab: FC<Props> = props => {
+  const {data, isLoading} = useGetFavoritesByProfile();
+
+  if (isLoading) {
+    return <AudioListLoadingUI />;
+  }
+
   return (
-    <View style={styles.container}>
-      <Text>FavoriteTab</Text>
-    </View>
+    <ScrollView style={styles.container}>
+      {data.length > 0 ? (
+        data?.map(item => {
+          return <AudioListItem audio={item} key={item.id} />;
+        })
+      ) : (
+        <EmptyRecords title="There is no favorite audio" />
+      )}
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    flex: 1,
+    padding: 10,
+  },
 });
-
 export default FavoriteTab;
