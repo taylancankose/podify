@@ -19,6 +19,7 @@ import {
 import deepEqual = require('deep-equal');
 import ImagePicker from 'react-native-image-crop-picker';
 import {getImagePermissions} from '@utils/helper';
+import ReVerificationLink from '@components/ReVerificationLink';
 
 interface Props {}
 
@@ -37,8 +38,8 @@ const ProfileSettings: FC<Props> = props => {
   const {profile} = useSelector(getAuthState);
 
   const isSame = deepEqual(userInfo, {
-    name: profile.name,
-    avatar: profile.avatar,
+    name: profile?.name,
+    avatar: profile?.avatar,
   });
 
   const handleLogout = async (fromAll?: boolean) => {
@@ -112,7 +113,6 @@ const ProfileSettings: FC<Props> = props => {
       console.log(error);
     }
   };
-
   return (
     <View style={styles.container}>
       <View>
@@ -133,7 +133,15 @@ const ProfileSettings: FC<Props> = props => {
           />
           <View style={styles.emailContainer}>
             <Text style={styles.email}>{profile.email}</Text>
-            <MaterialIcon name="verified" size={15} color={colors.SECONDARY} />
+            {profile.verified ? (
+              <MaterialIcon
+                name="verified"
+                size={15}
+                color={colors.SECONDARY}
+              />
+            ) : (
+              <ReVerificationLink linkTitle="Verify Account" activeAtFirst />
+            )}
           </View>
         </View>
         {isSame ? null : (

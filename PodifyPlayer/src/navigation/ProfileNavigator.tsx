@@ -1,6 +1,7 @@
 import ProfileSettings from '@components/Profile/ProfileSettings';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Profile from '@screens/Profile';
+import Verification from '@screens/auth/Verification';
 import colors from '@utils/colors';
 import React, {FC} from 'react';
 
@@ -30,6 +31,13 @@ const ProfileNavigator: FC<Props> = props => {
           headerTitleAlign: 'center',
           headerShadowVisible: false,
         }}
+      />
+      <Stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        component={Verification}
+        name="Verification"
       />
     </Stack.Navigator>
   );

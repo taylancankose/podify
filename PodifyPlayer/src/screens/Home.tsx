@@ -1,7 +1,7 @@
 import LatestUploads from '@components/LatestUploads';
 import OptionsModal from '@components/OptionsModal';
 import RecommendedAudios from '@components/RecommendedAudios';
-import React, {FC, useState} from 'react';
+import React, {FC, useEffect, useState} from 'react';
 import {View, Text, StyleSheet, Pressable} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from '@utils/colors';
@@ -13,6 +13,7 @@ import {updateNotification} from 'src/store/notification';
 import PlaylistModal from '@components/PlaylistModal';
 import PlaylistForm, {PlaylistInfo} from '@components/form/PlaylistForm';
 import {useGetPlaylist} from 'src/hooks/query';
+import TrackPlayer, {Track} from 'react-native-track-player';
 
 interface Props {}
 
@@ -91,10 +92,32 @@ const Home: FC<Props> = props => {
     }
   };
 
+  useEffect(() => {
+    const setupPlayer = async () => {
+      await TrackPlayer.setupPlayer();
+    };
+
+    setupPlayer();
+  }, []);
+
   return (
     <View style={styles.container}>
       <LatestUploads
-        onAudioPress={item => console.log(item)}
+        onAudioPress={async (item, data) => {
+          const lists: Track[] = data.map(item => {
+            return {
+              id: item.id,
+              title: item.title,
+              url: item.file,
+              artist: item.owner.name,
+              artwork: item.poster || require('../assets/music.png'),
+              genre: item.category,
+              isLiveStream: true,
+            };
+          });
+          await TrackPlayer.add([...lists]);
+          await TrackPlayer.play();
+        }}
         onAudioLongPress={handleOnLongPress}
       />
       <RecommendedAudios

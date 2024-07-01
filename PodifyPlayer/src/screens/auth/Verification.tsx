@@ -14,6 +14,11 @@ import {useDispatch} from 'react-redux';
 
 interface Props {}
 
+type PossibleScreens = {
+  ProfileSettings: undefined;
+  SignIn: undefined;
+};
+
 const otpFields = new Array(4).fill('');
 
 const Verification: FC<Props> = props => {
@@ -24,11 +29,12 @@ const Verification: FC<Props> = props => {
   const [canSendNewOTP, setCanSendNewOTP] = useState(false);
   const route = useRoute();
   const dispatch = useDispatch();
-  const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<PossibleScreens>>();
   const inputRef = useRef<TextInput>(null);
   const filledOTPs = otp.filter(o => o !== '');
 
-  const {userInfo} = route.params;
+  const {userInfo}: any = route.params;
 
   const handleChange = (value: string, i: number) => {
     const newOtp = [...otp];
@@ -43,7 +49,6 @@ const Verification: FC<Props> = props => {
     }
     setOtp([...newOtp]);
   };
-
   const isValidOtp = otp.every(value => {
     return value.trim();
   });
@@ -61,7 +66,13 @@ const Verification: FC<Props> = props => {
 
       dispatch(updateNotification({message: data.message, type: 'success'}));
 
-      navigation.navigate('SignIn');
+      if (navigation.getState().routeNames.includes('SignIn')) {
+        navigation.navigate('SignIn');
+      }
+
+      if (navigation.getState().routeNames.includes('ProfileSettings')) {
+        navigation.navigate('ProfileSettings');
+      }
     } catch (error) {
       const errorMsg = catchError(error);
       dispatch(updateNotification({message: errorMsg, type: 'error'}));
@@ -104,7 +115,7 @@ const Verification: FC<Props> = props => {
       console.log('requestForOTP', error.message);
     }
   };
-  console.log(filledOTPs)
+  console.log(filledOTPs);
   return (
     <SafeAreaView style={styles.container}>
       <AuthFormContainer title="Check your email">
