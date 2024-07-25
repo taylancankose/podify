@@ -14,6 +14,7 @@ import PlaylistModal from '@components/PlaylistModal';
 import PlaylistForm, {PlaylistInfo} from '@components/form/PlaylistForm';
 import {useGetPlaylist} from 'src/hooks/query';
 import TrackPlayer, {Track} from 'react-native-track-player';
+import useAudioController from 'src/hooks/useAudioController';
 
 interface Props {}
 
@@ -23,6 +24,7 @@ const Home: FC<Props> = props => {
   const [showPlaylistsModal, setShowPlaylistsModal] = useState(false);
   const [showPlaylistForm, setShowPlaylistForm] = useState(false);
 
+  const {onAudioPress} = useAudioController();
   const {data} = useGetPlaylist();
 
   const dispatch = useDispatch();
@@ -103,25 +105,11 @@ const Home: FC<Props> = props => {
   return (
     <View style={styles.container}>
       <LatestUploads
-        onAudioPress={async (item, data) => {
-          const lists: Track[] = data.map(item => {
-            return {
-              id: item.id,
-              title: item.title,
-              url: item.file,
-              artist: item.owner.name,
-              artwork: item.poster || require('../assets/music.png'),
-              genre: item.category,
-              isLiveStream: true,
-            };
-          });
-          await TrackPlayer.add([...lists]);
-          await TrackPlayer.play();
-        }}
+        onAudioPress={onAudioPress}
         onAudioLongPress={handleOnLongPress}
       />
       <RecommendedAudios
-        onAudioPress={item => console.log(item)}
+        onAudioPress={onAudioPress}
         onAudioLongPress={handleOnLongPress}
       />
       <OptionsModal
