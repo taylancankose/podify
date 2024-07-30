@@ -2,13 +2,18 @@ import AppLink from '@ui/AppLink';
 import AppModal from '@ui/AppModal';
 import colors from '@utils/colors';
 import React, {FC} from 'react';
-import {View, Text, StyleSheet, Image} from 'react-native';
+import {View, Text, StyleSheet, Image, Pressable} from 'react-native';
 import {useProgress} from 'react-native-track-player';
 import {useSelector} from 'react-redux';
 import {getPlayerState} from 'src/store/player';
 import formatDuration = require('format-duration');
 import Slider from '@react-native-community/slider';
 import useAudioController from 'src/hooks/useAudioController';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import PlayPauseBtn from '@ui/PlayPauseBtn';
+import PlayerController from '@ui/PlayerController';
+import Loader from '@ui/Loader';
 
 interface Props {
   visible: boolean;
@@ -23,7 +28,15 @@ const formattedDuration = (duration = 0) => {
 
 const AudioPlayer: FC<Props> = ({visible, onRequestClose}) => {
   const {onGoingAudio} = useSelector(getPlayerState);
-  const {seekTo} = useAudioController();
+  const {
+    seekTo,
+    skipTo,
+    skipNext,
+    skipPrevious,
+    togglePlayPause,
+    isPlaying,
+    isBusy,
+  } = useAudioController();
   const poster = onGoingAudio?.poster;
   const source = poster ? {uri: poster} : require('../assets/music.png');
 
@@ -31,6 +44,19 @@ const AudioPlayer: FC<Props> = ({visible, onRequestClose}) => {
 
   const updateSeek = async (value: number) => {
     await seekTo(value);
+  };
+
+  const handleSkipTo = async (skipType: 'forward' | 'reverse') => {
+    if (skipType === 'forward') await skipTo(10);
+    if (skipType === 'reverse') await skipTo(-10);
+  };
+
+  const handleNext = async () => {
+    await skipNext(duration);
+  };
+
+  const handlePrev = async () => {
+    await skipPrevious(duration);
   };
 
   return (
@@ -58,6 +84,51 @@ const AudioPlayer: FC<Props> = ({visible, onRequestClose}) => {
             value={position}
             onSlidingComplete={updateSeek}
           />
+
+          <View style={styles.controls}>
+            <PlayerController ignoreContainer onPress={handlePrev}>
+              <AntDesign
+                name="stepbackward"
+                size={24}
+                color={colors.CONTRAST}
+              />
+            </PlayerController>
+
+            <PlayerController
+              onPress={() => handleSkipTo('reverse')}
+              ignoreContainer>
+              <FontAwesome
+                name="rotate-left"
+                size={18}
+                color={colors.CONTRAST}
+              />
+            </PlayerController>
+
+            <PlayerController ignoreContainer={false}>
+              {isBusy ? (
+                <Loader />
+              ) : (
+                <PlayPauseBtn
+                  playing={isPlaying}
+                  color={colors.PRIMARY}
+                  onPress={togglePlayPause}
+                />
+              )}
+            </PlayerController>
+
+            <PlayerController ignoreContainer>
+              <FontAwesome
+                name="rotate-right"
+                size={18}
+                color={colors.CONTRAST}
+                onPress={() => handleSkipTo('forward')}
+              />
+            </PlayerController>
+
+            <PlayerController ignoreContainer onPress={handleNext}>
+              <AntDesign name="stepforward" size={24} color={colors.CONTRAST} />
+            </PlayerController>
+          </View>
         </View>
       </View>
     </AppModal>
@@ -92,6 +163,12 @@ const styles = StyleSheet.create({
   },
   duration: {
     color: colors.CONTRAST,
+  },
+  controls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 20,
   },
 });
 
