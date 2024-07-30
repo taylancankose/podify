@@ -32,11 +32,15 @@ const useAudioController = () => {
   const {onGoingAudio} = useSelector(getPlayerState);
   const dispatch = useDispatch();
 
-  const isPlayerReader = playbackState !== State.None; // no equal to none check
-  console.log(playbackState);
+  const isPlayerReady = playbackState !== State.None; // no equal to none check
+  const isPlaying = playbackState === State.Playing;
+  const isPaused = playbackState === State.Paused;
+  const isBusy =
+    playbackState === State.Buffering || playbackState === State.Loading;
+
   const onAudioPress = async (item: AudioData, data: AudioData[]) => {
     // loading and tapping first time
-    if (!isPlayerReader) {
+    if (!isPlayerReady) {
       // audio for first time
       await updateQueue(data);
       const index = data.findIndex(audio => audio.id === item.id);
@@ -74,7 +78,23 @@ const useAudioController = () => {
     }
   };
 
-  return {onAudioPress};
+  const togglePlayPause = async () => {
+    if (isPlaying) await TrackPlayer.pause();
+    if (isPaused) await TrackPlayer.play();
+  };
+
+  const seekTo = async (position: number) => {
+    await TrackPlayer.seekTo(position);
+  };
+
+  return {
+    onAudioPress,
+    isPlayerReady,
+    isPlaying,
+    togglePlayPause,
+    isBusy,
+    seekTo,
+  };
 };
 
 export default useAudioController;
