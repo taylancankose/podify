@@ -10,6 +10,7 @@ import Loader from '@ui/Loader';
 import {mapRange} from '@utils/math';
 import {useProgress} from 'react-native-track-player';
 import AudioPlayer from './AudioPlayer';
+import CurrentAudioList from './CurrentAudioList';
 
 interface Props {}
 
@@ -17,6 +18,7 @@ export const MiniPlayerHeight = 60;
 
 const MiniAudioPlayer: FC<Props> = props => {
   const [playerVisibility, setPlayerVisibility] = useState(false);
+  const [showCurrentList, setShowCurrentList] = useState(false);
   const {onGoingAudio} = useSelector(getPlayerState);
   const {isPlaying, isBusy, togglePlayPause} = useAudioController();
   const progress = useProgress();
@@ -27,6 +29,15 @@ const MiniAudioPlayer: FC<Props> = props => {
 
   const showPlayerModal = () => {
     setPlayerVisibility(true);
+  };
+
+  const handleOnCurrentListClose = () => {
+    setShowCurrentList(false);
+  };
+
+  const handleOnListOptionPress = () => {
+    closePlayerModal();
+    setShowCurrentList(true);
   };
 
   const poster = onGoingAudio?.poster;
@@ -67,6 +78,12 @@ const MiniAudioPlayer: FC<Props> = props => {
       <AudioPlayer
         visible={playerVisibility}
         onRequestClose={closePlayerModal}
+        onListOptionPress={handleOnListOptionPress}
+      />
+
+      <CurrentAudioList
+        visible={showCurrentList}
+        onRequestClose={handleOnCurrentListClose}
       />
     </>
   );

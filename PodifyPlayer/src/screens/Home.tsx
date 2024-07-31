@@ -24,8 +24,8 @@ const Home: FC<Props> = props => {
   const [selectedAudio, setSelectedAudio] = useState<AudioData>();
   const [showPlaylistsModal, setShowPlaylistsModal] = useState(false);
   const [showPlaylistForm, setShowPlaylistForm] = useState(false);
-
   const {onAudioPress} = useAudioController();
+
   const {data} = useGetPlaylist();
 
   const dispatch = useDispatch();
@@ -36,17 +36,15 @@ const Home: FC<Props> = props => {
     try {
       const client = await getClient();
 
-      const response = await client.post(
-        `/favorite?audioId=${selectedAudio.id}`,
-      );
-
-      setSelectedAudio(undefined);
-      setShowOptions(false);
+      const {data} = await client.post(`/favorite?audioId=${selectedAudio.id}`);
     } catch (error) {
       const errorMsg = catchError(error);
       dispatch(updateNotification({message: errorMsg, type: 'error'}));
       console.error('Error adding to favorite:', error);
     }
+
+    setSelectedAudio(undefined);
+    setShowOptions(false);
   };
 
   const handleOnLongPress = (audio: AudioData) => {
@@ -94,14 +92,6 @@ const Home: FC<Props> = props => {
       console.log(errMsg);
     }
   };
-
-  useEffect(() => {
-    const setupPlayer = async () => {
-      await TrackPlayer.setupPlayer();
-    };
-
-    setupPlayer();
-  }, []);
 
   return (
     <AppView>

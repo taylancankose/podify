@@ -2,20 +2,25 @@ import colors from '@utils/colors';
 import React, {FC} from 'react';
 import {View, Text, StyleSheet, Pressable, Image} from 'react-native';
 import {AudioData} from 'src/@types/audio';
+import PlayAnimation from './PlayAnimation';
 
 interface Props {
   audio: AudioData;
   onPress?(): void;
+  isPlaying?: boolean;
 }
 
-const AudioListItem: FC<Props> = ({audio, onPress}) => {
+const AudioListItem: FC<Props> = ({audio, onPress, isPlaying = false}) => {
   const getSource = (poster?: string) => {
     return poster ? {uri: poster} : require('../assets/music_small.png');
   };
 
   return (
     <Pressable onPress={onPress} style={styles.listItem}>
-      <Image source={getSource(audio.poster)} style={styles.poster} />
+      <View>
+        <Image source={getSource(audio.poster)} style={styles.poster} />
+        <PlayAnimation visible={isPlaying} />
+      </View>
       <View style={styles.titleContainer}>
         <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
           {audio.title}
@@ -39,6 +44,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.OVERLAY,
     marginBottom: 15,
     borderRadius: 5,
+    overflow: 'hidden',
   },
   titleContainer: {
     flex: 1,

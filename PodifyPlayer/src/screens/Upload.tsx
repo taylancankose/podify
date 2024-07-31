@@ -67,7 +67,6 @@ const Upload: FC<Props> = props => {
           type: data.poster.type,
           uri: data.poster.uri,
         });
-      console.log(formData['_parts']);
 
       const client = await getClient({'Content-Type': 'multipart/form-data;'});
       const res = await client.post('/audio/create', formData, {
@@ -88,7 +87,6 @@ const Upload: FC<Props> = props => {
           setUploadProgress(Math.floor(uploaded));
         },
       });
-      console.log(res.data);
     } catch (error) {
       const errorMsg = catchError(error);
       dispatch(updateNotification({message: errorMsg, type: 'error'}));

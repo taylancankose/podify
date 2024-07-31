@@ -26,7 +26,7 @@ const AudioCard: FC<Props> = ({
   onPress,
   containerStyle,
   onLongPress,
-  playing,
+  playing = false,
 }) => {
   const source = poster ? {uri: poster} : require('../assets/music.png');
   return (

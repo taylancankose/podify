@@ -35,7 +35,6 @@ const RecommendedAudios: FC<Props> = ({onAudioPress, onAudioLongPress}) => {
         />
       </PulseContainer>
     );
-  console.log(onGoingAudio);
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Recommended Uploads</Text>
