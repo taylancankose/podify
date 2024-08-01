@@ -29,7 +29,7 @@ const AudioInfoContainer: FC<Props> = ({visible, closeHandler}) => {
           <Text style={styles.title}>{onGoingAudio?.title}</Text>
           <View style={styles.ownerInfo}>
             <Text style={[styles.title, {marginRight: 8}]}>Created By:</Text>
-            <AppLink title={onGoingAudio.owner.name || ''} />
+            <AppLink title={onGoingAudio?.owner?.name || ''} />
           </View>
           <Text style={styles.about}>{onGoingAudio?.about}</Text>
         </View>

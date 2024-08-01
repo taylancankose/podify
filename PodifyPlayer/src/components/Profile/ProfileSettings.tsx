@@ -1,8 +1,16 @@
 import AvatarField from '@ui/AvatarField';
 import colors from '@utils/colors';
 import React, {FC, useEffect, useState} from 'react';
-import {View, Text, StyleSheet, Pressable, TextInput} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  TextInput,
+  Alert,
+} from 'react-native';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import MaterialComIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import AppButton from '@ui/AppButton';
 import {getClient} from 'src/api/client';
@@ -20,6 +28,7 @@ import deepEqual = require('deep-equal');
 import ImagePicker from 'react-native-image-crop-picker';
 import {getImagePermissions} from '@utils/helper';
 import ReVerificationLink from '@components/ReVerificationLink';
+import {useQueryClient} from 'react-query';
 
 interface Props {}
 
@@ -30,6 +39,7 @@ interface ProfileInfo {
 
 const ProfileSettings: FC<Props> = props => {
   const dispatch = useDispatch();
+  const queryClient = useQueryClient();
   const [userInfo, setUserInfo] = useState<ProfileInfo>({
     name: '',
   });
@@ -113,47 +123,103 @@ const ProfileSettings: FC<Props> = props => {
       console.log(error);
     }
   };
+
+  const clearHistory = async () => {
+    try {
+      const client = await getClient();
+      await client.delete('/history?all=yes');
+      queryClient.invalidateQueries({queryKey: ['histories']});
+      dispatch(
+        updateNotification({
+          message: 'History cleared succussfully',
+          type: 'success',
+        }),
+      );
+    } catch (error) {
+      const errorMsg = catchError(error);
+      dispatch(updateNotification({message: errorMsg, type: 'error'}));
+      console.log(error, 'clear error');
+    }
+  };
+
+  const handleHistoryClear = () => {
+    Alert.alert(
+      'Are you sure you want to clear the history',
+      'This will clear all of the audios previously listened to.',
+      [
+        {
+          text: 'Clear',
+          style: 'destructive',
+          onPress() {
+            clearHistory();
+          },
+        },
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+      ],
+      {
+        cancelable: true,
+      },
+    );
+  };
+
   return (
     <View style={styles.container}>
       <View>
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>Profile Settings</Text>
+        <View>
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>Profile Settings</Text>
+          </View>
+          <View style={styles.settingsContainer}>
+            <View style={styles.avatarContainer}>
+              <AvatarField source={userInfo.avatar} />
+              <Pressable onPress={handleImageSelect} style={styles.paddingLeft}>
+                <Text style={styles.linkText}>Update Profile Image</Text>
+              </Pressable>
+            </View>
+            <TextInput
+              onChangeText={text => setUserInfo({...userInfo, name: text})}
+              style={styles.nameInput}
+              value={userInfo.name}
+            />
+            <View style={styles.emailContainer}>
+              <Text style={styles.email}>{profile.email}</Text>
+              {profile.verified ? (
+                <MaterialIcon
+                  name="verified"
+                  size={15}
+                  color={colors.SECONDARY}
+                />
+              ) : (
+                <ReVerificationLink linkTitle="Verify Account" activeAtFirst />
+              )}
+            </View>
+          </View>
+          {isSame ? null : (
+            <View style={styles.marginTop}>
+              <AppButton
+                onPress={handleSubmit}
+                title="Update"
+                borderRadius={8}
+                loading={loading}
+              />
+            </View>
+          )}
         </View>
-        <View style={styles.settingsContainer}>
-          <View style={styles.avatarContainer}>
-            <AvatarField source={userInfo.avatar} />
-            <Pressable onPress={handleImageSelect} style={styles.paddingLeft}>
-              <Text style={styles.linkText}>Update Profile Image</Text>
+
+        <View style={{marginTop: 20}}>
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>History</Text>
+          </View>
+          <View>
+            <Pressable onPress={handleHistoryClear} style={styles.clearBtn}>
+              <MaterialComIcon name="broom" size={24} color={colors.CONTRAST} />
+              <Text style={styles.logoutBtnTitle}>Clear History</Text>
             </Pressable>
           </View>
-          <TextInput
-            onChangeText={text => setUserInfo({...userInfo, name: text})}
-            style={styles.nameInput}
-            value={userInfo.name}
-          />
-          <View style={styles.emailContainer}>
-            <Text style={styles.email}>{profile.email}</Text>
-            {profile.verified ? (
-              <MaterialIcon
-                name="verified"
-                size={15}
-                color={colors.SECONDARY}
-              />
-            ) : (
-              <ReVerificationLink linkTitle="Verify Account" activeAtFirst />
-            )}
-          </View>
         </View>
-        {isSame ? null : (
-          <View style={styles.marginTop}>
-            <AppButton
-              onPress={handleSubmit}
-              title="Update"
-              borderRadius={8}
-              loading={loading}
-            />
-          </View>
-        )}
       </View>
 
       <View style={{marginBottom: 10}}>
@@ -243,6 +309,12 @@ const styles = StyleSheet.create({
   },
   marginTop: {
     marginTop: 16,
+  },
+  clearBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 10,
+    marginVertical: 14,
   },
 });
 

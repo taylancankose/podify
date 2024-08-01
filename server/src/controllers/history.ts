@@ -4,7 +4,6 @@ import { RequestHandler } from "express";
 
 export const updateHistory: RequestHandler = async (req, res) => {
   const oldHistory = await History.findOne({ owner: req.user.id });
-
   const { audio, progress, date } = req.body;
 
   const history: historyType = { audio, progress, date };
@@ -75,7 +74,6 @@ export const updateHistory: RequestHandler = async (req, res) => {
       $set: { last: history },
     });
   }
-
   res.json({ success: true });
 };
 
