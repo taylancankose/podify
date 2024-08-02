@@ -51,7 +51,6 @@ const styles = StyleSheet.create({
   title: {
     color: colors.CONTRAST,
     fontWeight: '500',
-    fontSize: 16,
     marginTop: 5,
   },
 });

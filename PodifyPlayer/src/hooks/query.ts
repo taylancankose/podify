@@ -120,3 +120,64 @@ export const useGetHistory = () => {
 
   return query;
 };
+
+const getRecentlyPlayed = async (): Promise<AudioData[]> => {
+  const client = await getClient();
+  const {data} = await client.get('/history/recently-played');
+
+  return data.audios;
+};
+
+export const useGetRecentlyPlayed = () => {
+  const dispatch = useDispatch();
+  const query = useQuery(['recently-played'], {
+    queryFn: () => getRecentlyPlayed(),
+    onError(err) {
+      const errMsg = catchError(err);
+      dispatch(updateNotification({message: errMsg, type: 'error'}));
+    },
+  });
+
+  return query;
+};
+
+const getRecommendedPlaylist = async (): Promise<Playlist[]> => {
+  const client = await getClient();
+  const {data} = await client.get('/profile/auto-generated-playlist');
+
+  return data.playlist;
+};
+
+export const useGetRecommendedPlaylist = () => {
+  const dispatch = useDispatch();
+  const query = useQuery(['recommended-playlist'], {
+    queryFn: () => getRecommendedPlaylist(),
+    onError(err) {
+      const errMsg = catchError(err);
+      dispatch(updateNotification({message: errMsg, type: 'error'}));
+    },
+  });
+
+  return query;
+};
+
+const getIsFav = async (id: string): Promise<boolean> => {
+  const client = await getClient();
+  const {data} = await client.get('/favorite/is-fav?audioId?=' + id);
+
+  return data.result;
+};
+
+export const useGetIsFav = (id: string) => {
+  const dispatch = useDispatch();
+  const query = useQuery(['favorite', id], {
+    queryFn: () => getIsFav(id),
+    onError(err) {
+      const errMsg = catchError(err);
+      dispatch(updateNotification({message: errMsg, type: 'error'}));
+    },
+    enabled: id ? true : false,
+  });
+
+  return query;
+};

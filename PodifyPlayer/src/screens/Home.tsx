@@ -16,6 +16,8 @@ import {useGetPlaylist} from 'src/hooks/query';
 import TrackPlayer, {Track} from 'react-native-track-player';
 import useAudioController from 'src/hooks/useAudioController';
 import AppView from '@components/AppView';
+import RecentlyPlayed from '@components/RecentlyPlayed';
+import RecommendedPlaylist from '@components/RecommendedPlaylist';
 
 interface Props {}
 
@@ -96,14 +98,26 @@ const Home: FC<Props> = props => {
   return (
     <AppView>
       <ScrollView contentContainerStyle={styles.container}>
-        <LatestUploads
-          onAudioPress={onAudioPress}
-          onAudioLongPress={handleOnLongPress}
-        />
-        <RecommendedAudios
-          onAudioPress={onAudioPress}
-          onAudioLongPress={handleOnLongPress}
-        />
+        <View style={styles.space}>
+          <RecentlyPlayed />
+        </View>
+        <View style={styles.space}>
+          <LatestUploads
+            onAudioPress={onAudioPress}
+            onAudioLongPress={handleOnLongPress}
+          />
+        </View>
+        <View style={styles.space}>
+          <RecommendedAudios
+            onAudioPress={onAudioPress}
+            onAudioLongPress={handleOnLongPress}
+          />
+        </View>
+
+        <View style={styles.space}>
+          <RecommendedPlaylist />
+        </View>
+
         <OptionsModal
           visible={showOptions}
           onRequestClose={() => {
@@ -170,6 +184,9 @@ const styles = StyleSheet.create({
     paddingLeft: 12,
   },
   optionTitle: {color: colors.PRIMARY, fontSize: 16, marginLeft: 4},
+  space: {
+    marginBottom: 15,
+  },
 });
 
 export default Home;

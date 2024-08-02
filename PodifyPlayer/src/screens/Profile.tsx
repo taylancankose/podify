@@ -1,3 +1,4 @@
+import AppView from '@components/AppView';
 import FavoriteTab from '@components/Profile/FavoriteTab';
 import HistoryTab from '@components/Profile/HistoryTab';
 import PlaylistTab from '@components/Profile/PlaylistTab';
@@ -17,19 +18,21 @@ interface Props {}
 const Profile: FC<Props> = props => {
   const {profile} = useSelector(getAuthState);
   return (
-    <View style={styles.container}>
-      <ProfileContainer profile={profile} />
-      <Tab.Navigator
-        screenOptions={{
-          tabBarStyle: styles.tabBarStyle,
-          tabBarLabelStyle: styles.tabBarLabelStyle,
-        }}>
-        <Tab.Screen name="Uploads" component={UploadTab} />
-        <Tab.Screen name="Playlists" component={PlaylistTab} />
-        <Tab.Screen name="Favorites" component={FavoriteTab} />
-        <Tab.Screen name="History" component={HistoryTab} />
-      </Tab.Navigator>
-    </View>
+    <AppView>
+      <View style={styles.container}>
+        <ProfileContainer profile={profile} />
+        <Tab.Navigator
+          screenOptions={{
+            tabBarStyle: styles.tabBarStyle,
+            tabBarLabelStyle: styles.tabBarLabelStyle,
+          }}>
+          <Tab.Screen name="Uploads" component={UploadTab} />
+          <Tab.Screen name="Playlists" component={PlaylistTab} />
+          <Tab.Screen name="Favorites" component={FavoriteTab} />
+          <Tab.Screen name="History" component={HistoryTab} />
+        </Tab.Navigator>
+      </View>
+    </AppView>
   );
 };
 

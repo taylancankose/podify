@@ -11,6 +11,9 @@ import {mapRange} from '@utils/math';
 import {useProgress} from 'react-native-track-player';
 import AudioPlayer from './AudioPlayer';
 import CurrentAudioList from './CurrentAudioList';
+import {useGetIsFav} from 'src/hooks/query';
+import {useMutation, useQueryClient} from 'react-query';
+import {getClient} from 'src/api/client';
 
 interface Props {}
 
@@ -22,6 +25,24 @@ const MiniAudioPlayer: FC<Props> = props => {
   const {onGoingAudio} = useSelector(getPlayerState);
   const {isPlaying, isBusy, togglePlayPause} = useAudioController();
   const progress = useProgress();
+  const {data: isFav} = useGetIsFav(onGoingAudio?.id || '');
+  const queryClient = useQueryClient();
+
+  const toggleIsFavorite = async (id: string) => {
+    if (!id) return;
+    const client = await getClient();
+    await client.post('/favorite?audioId=' + id);
+  };
+
+  const favoriteMutation = useMutation({
+    mutationFn: async id => toggleIsFavorite(id),
+    onMutate: (id: string) => {
+      queryClient.setQueryData<boolean>(
+        ['favorite', onGoingAudio?.id],
+        prevData => !prevData,
+      );
+    },
+  });
 
   const closePlayerModal = () => {
     setPlayerVisibility(false);
@@ -65,8 +86,14 @@ const MiniAudioPlayer: FC<Props> = props => {
           <Text style={styles.name}>{onGoingAudio?.owner.name}</Text>
         </Pressable>
 
-        <Pressable style={{paddingHorizontal: 10}}>
-          <AntDesign name="hearto" size={24} color={colors.CONTRAST} />
+        <Pressable
+          onPress={() => favoriteMutation.mutate(onGoingAudio?.id || '')}
+          style={{paddingHorizontal: 10}}>
+          <AntDesign
+            name={isFav ? 'heart' : 'hearto'}
+            size={24}
+            color={colors.CONTRAST}
+          />
         </Pressable>
         {isBusy ? (
           <Loader />
