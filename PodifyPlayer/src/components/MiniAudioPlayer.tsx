@@ -14,19 +14,27 @@ import CurrentAudioList from './CurrentAudioList';
 import {useGetIsFav} from 'src/hooks/query';
 import {useMutation, useQueryClient} from 'react-query';
 import {getClient} from 'src/api/client';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {HomeNavigatorStackParamList} from 'src/@types/navigation';
+import {getAuthState} from 'src/store/auth';
 
 interface Props {}
 
 export const MiniPlayerHeight = 60;
 
 const MiniAudioPlayer: FC<Props> = props => {
+  const progress = useProgress();
+  const queryClient = useQueryClient();
+  const navigation =
+    useNavigation<NavigationProp<HomeNavigatorStackParamList>>();
+  const {onGoingAudio} = useSelector(getPlayerState);
+  const {profile} = useSelector(getAuthState);
+
+  const {isPlaying, isBusy, togglePlayPause} = useAudioController();
+  const {data: isFav} = useGetIsFav(onGoingAudio?.id || '');
+
   const [playerVisibility, setPlayerVisibility] = useState(false);
   const [showCurrentList, setShowCurrentList] = useState(false);
-  const {onGoingAudio} = useSelector(getPlayerState);
-  const {isPlaying, isBusy, togglePlayPause} = useAudioController();
-  const progress = useProgress();
-  const {data: isFav} = useGetIsFav(onGoingAudio?.id || '');
-  const queryClient = useQueryClient();
 
   const toggleIsFavorite = async (id: string) => {
     if (!id) return;
@@ -59,6 +67,17 @@ const MiniAudioPlayer: FC<Props> = props => {
   const handleOnListOptionPress = () => {
     closePlayerModal();
     setShowCurrentList(true);
+  };
+
+  const handleOnProfileLinkPress = () => {
+    closePlayerModal();
+    if (profile?.id === onGoingAudio?.owner.id) {
+      navigation.navigate('ProfileNavigator');
+    } else {
+      navigation.navigate('PublicProfile', {
+        profileId: onGoingAudio?.owner?.id || '',
+      });
+    }
   };
 
   const poster = onGoingAudio?.poster;
@@ -106,6 +125,7 @@ const MiniAudioPlayer: FC<Props> = props => {
         visible={playerVisibility}
         onRequestClose={closePlayerModal}
         onListOptionPress={handleOnListOptionPress}
+        onProfileLinkPress={handleOnProfileLinkPress}
       />
 
       <CurrentAudioList

@@ -18,6 +18,11 @@ import useAudioController from 'src/hooks/useAudioController';
 import AppView from '@components/AppView';
 import RecentlyPlayed from '@components/RecentlyPlayed';
 import RecommendedPlaylist from '@components/RecommendedPlaylist';
+import {
+  updatePlaylistVisibility,
+  updateSelectedList,
+  updateSelectedListId,
+} from 'src/store/playlistModal';
 
 interface Props {}
 
@@ -95,6 +100,11 @@ const Home: FC<Props> = props => {
     }
   };
 
+  const handleOnListPress = (item: Playlist) => {
+    dispatch(updateSelectedListId(item.id));
+    dispatch(updatePlaylistVisibility(true));
+  };
+
   return (
     <AppView>
       <ScrollView contentContainerStyle={styles.container}>
@@ -115,7 +125,7 @@ const Home: FC<Props> = props => {
         </View>
 
         <View style={styles.space}>
-          <RecommendedPlaylist />
+          <RecommendedPlaylist onListPress={handleOnListPress} />
         </View>
 
         <OptionsModal

@@ -28,7 +28,7 @@ const UploadTab: FC<Props> = props => {
               onPress={() => onAudioPress(item, data)}
               audio={item}
               key={item.id}
-              isPlaying={onGoingAudio.id === item.id}
+              isPlaying={onGoingAudio?.id === item?.id}
             />
           );
         })

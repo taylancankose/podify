@@ -1,11 +1,14 @@
 import colors from '@utils/colors';
 import React, {FC} from 'react';
 import {View, Text, StyleSheet, Pressable, Image, FlatList} from 'react-native';
+import {Playlist} from 'src/@types/audio';
 import {useGetRecommendedPlaylist} from 'src/hooks/query';
 
-interface Props {}
+interface Props {
+  onListPress(item: Playlist): void;
+}
 
-const RecommendedPlaylist: FC<Props> = props => {
+const RecommendedPlaylist: FC<Props> = ({onListPress}) => {
   const {data, isLoading} = useGetRecommendedPlaylist();
 
   return (
@@ -18,7 +21,9 @@ const RecommendedPlaylist: FC<Props> = props => {
         keyExtractor={item => item.id}
         renderItem={({item}) => {
           return (
-            <Pressable style={styles.container}>
+            <Pressable
+              onPress={() => onListPress(item)}
+              style={styles.container}>
               <Image
                 source={require('../assets/music.png')}
                 style={styles.img}

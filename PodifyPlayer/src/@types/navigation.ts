@@ -9,3 +9,14 @@ export type ProfileNavigatorStackParamList = {
     };
   };
 };
+
+export type HomeNavigatorStackParamList = {
+  PublicProfile: {profileId: string};
+  ProfileNavigator: undefined;
+  Home: undefined;
+};
+
+export type PublicProfileTabParamList = {
+  PublicUploads: {profileId: string};
+  PublicPlaylist: {profileId: string};
+};

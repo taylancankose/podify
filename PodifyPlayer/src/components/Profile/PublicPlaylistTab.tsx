@@ -1,19 +1,24 @@
-import EmptyRecords from '@ui/EmptyRecords';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import PlaylistItem from '@ui/PlaylistItem';
 import React, {FC} from 'react';
-import {View, Text, StyleSheet, ScrollView} from 'react-native';
+import {StyleSheet, ScrollView} from 'react-native';
 import {useDispatch} from 'react-redux';
 import {Playlist} from 'src/@types/audio';
-import {useGetPlaylist} from 'src/hooks/query';
+import {PublicProfileTabParamList} from 'src/@types/navigation';
+import {useGetPublicPlaylists} from 'src/hooks/query';
 import {
   updatePlaylistVisibility,
   updateSelectedListId,
 } from 'src/store/playlistModal';
 
-interface Props {}
+type Props = NativeStackScreenProps<
+  PublicProfileTabParamList,
+  'PublicPlaylist'
+>;
 
-const PlaylistTab: FC<Props> = props => {
-  const {data, isLoading} = useGetPlaylist();
+const PublicPlaylistTab: FC<Props> = props => {
+  const {data} = useGetPublicPlaylists(props.route.params.profileId);
+
   const dispatch = useDispatch();
 
   const handleOnListPress = (item: Playlist) => {
@@ -23,8 +28,6 @@ const PlaylistTab: FC<Props> = props => {
 
   return (
     <ScrollView style={styles.container}>
-      {!data?.length ? <EmptyRecords title="There is no playlist" /> : null}
-
       {data?.map(playlist => {
         return (
           <PlaylistItem
@@ -40,8 +43,8 @@ const PlaylistTab: FC<Props> = props => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
+    marginTop: 16,
   },
 });
 
-export default PlaylistTab;
+export default PublicPlaylistTab;
