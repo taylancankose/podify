@@ -13,12 +13,13 @@ import path from "path";
 export const generateMailTransporter = () => {
   const transport = nodemailer.createTransport({
     host: MAILTRAP_HOST,
-    port: MAILTRAP_PORT,
+    port: 2525,
     auth: {
       user: MAILTRAP_USER,
       pass: MAILTRAP_PASSWORD,
     },
   });
+
   return transport;
 };
 
@@ -48,7 +49,7 @@ export const sendVerificationMail = async (token: string, profile: Profile) => {
     attachments: [
       {
         filename: "logo.jpg",
-        path: path.join(__dirname, "../mail/logo.jpg"),
+        path: path.join(__dirname, "../mail/images/logo.jpg"),
         cid: "logo", // content id
       },
     ],
@@ -82,7 +83,7 @@ export const sendForgetPasswordLink = async (options: Options) => {
     attachments: [
       {
         filename: "logo.jpg",
-        path: path.join(__dirname, "../mail/logo.jpg"),
+        path: path.join(__dirname, "../mail/images/logo.jpg"),
         cid: "logo", // content id
       },
     ],
@@ -109,7 +110,7 @@ export const sendPasswordResetSuccessEmail = async (
     attachments: [
       {
         filename: "logo.jpg",
-        path: path.join(__dirname, "../mail/logo.jpg"),
+        path: path.join(__dirname, "../mail/images/logo.jpg"),
         cid: "logo", // content id
       },
     ],

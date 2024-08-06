@@ -6,7 +6,7 @@ import {
 import { isVerified, mustAuth } from "#/middleware/auth";
 import fileParser from "#/middleware/fileParser";
 import { validate } from "#/middleware/validator";
-import { AudioVerificationSchema } from "#/utils/validationSchema";
+import { AudioValidationSchema } from "#/utils/validationSchema";
 import { Router } from "express";
 
 const router = Router();
@@ -16,7 +16,7 @@ router.post(
   mustAuth, // must logged in
   isVerified, // findout authed user is verified or not. verified email id users only upload audio....
   fileParser, // dosya kontrolü
-  validate(AudioVerificationSchema), // audioVerficationSchema yı validate et
+  validate(AudioValidationSchema), // audioVerficationSchema yı validate et
   createAudio
 );
 
@@ -25,7 +25,7 @@ router.patch(
   mustAuth, // must logged in
   isVerified, // findout authed user is verified or not. verified email id users only upload audio....
   fileParser, // dosya kontrolü
-  validate(AudioVerificationSchema), // audioVerficationSchema yı validate et
+  validate(AudioValidationSchema), // audioVerficationSchema yı validate et
   updateAudio
 );
 

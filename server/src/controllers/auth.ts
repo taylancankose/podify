@@ -16,6 +16,7 @@ import { JWT_SECRET, PASSWORD_RESET_LINK } from "#/utils/variables";
 import jwt from "jsonwebtoken";
 import cloudinary from "#/cloud";
 import formidable from "formidable";
+import { RequestWithFiles } from "#/middleware/fileParser";
 
 export const create: RequestHandler = async (req: CreateUser, res) => {
   const { email, password, name } = req.body;
@@ -199,9 +200,12 @@ export const login: RequestHandler = async (req, res) => {
   });
 };
 
-export const updateProfile: RequestHandler = async (req, res) => {
+export const updateProfile: RequestHandler = async (
+  req: RequestWithFiles,
+  res
+) => {
   const { name } = req.body;
-  const avatar = req.files?.avatar as formidable.File;
+  const avatar = req.files?.avatar as formidable.File[];
 
   const user = await User.findById(req.user.id);
   if (!user) throw new Error("something went wrong, user not found!");
