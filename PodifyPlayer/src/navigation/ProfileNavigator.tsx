@@ -1,4 +1,5 @@
 import ProfileSettings from '@components/Profile/ProfileSettings';
+import UpdateAudio from '@components/Profile/UpdateAudio';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Profile from '@screens/Profile';
 import Verification from '@screens/auth/Verification';
@@ -38,6 +39,13 @@ const ProfileNavigator: FC<Props> = props => {
         }}
         component={Verification}
         name="Verification"
+      />
+      <Stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        component={UpdateAudio}
+        name="UpdateAudio"
       />
     </Stack.Navigator>
   );

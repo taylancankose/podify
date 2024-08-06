@@ -74,7 +74,6 @@ const AudioForm: FC<Props> = ({
           uri: data.file.uri,
         });
       }
-
       formData.append('title', data.title);
       formData.append('about', data.about);
       formData.append('category', data.category);
@@ -85,7 +84,6 @@ const AudioForm: FC<Props> = ({
           type: data.poster.type,
           uri: data.poster.uri,
         });
-
       onSubmit(formData);
     } catch (error) {
       const errorMsg = catchError(error);
@@ -102,7 +100,6 @@ const AudioForm: FC<Props> = ({
       setIsForUpdate(true);
     }
   }, [initialValues]);
-
   return (
     <AppView>
       <ScrollView style={styles.container}>

@@ -1,7 +1,7 @@
 import LatestUploads from '@components/LatestUploads';
 import OptionsModal from '@components/OptionsModal';
 import RecommendedAudios from '@components/RecommendedAudios';
-import React, {FC, useEffect, useState} from 'react';
+import React, {FC, useState} from 'react';
 import {View, Text, StyleSheet, Pressable, ScrollView} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from '@utils/colors';
@@ -13,14 +13,12 @@ import {updateNotification} from 'src/store/notification';
 import PlaylistModal from '@components/PlaylistModal';
 import PlaylistForm, {PlaylistInfo} from '@components/form/PlaylistForm';
 import {useGetPlaylist} from 'src/hooks/query';
-import TrackPlayer, {Track} from 'react-native-track-player';
 import useAudioController from 'src/hooks/useAudioController';
 import AppView from '@components/AppView';
 import RecentlyPlayed from '@components/RecentlyPlayed';
 import RecommendedPlaylist from '@components/RecommendedPlaylist';
 import {
   updatePlaylistVisibility,
-  updateSelectedList,
   updateSelectedListId,
 } from 'src/store/playlistModal';
 

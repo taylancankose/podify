@@ -1,6 +1,9 @@
+import {AudioData} from './audio';
+
 export type ProfileNavigatorStackParamList = {
   Profile: undefined;
   ProfileSettings: undefined;
+  UpdateAudio: {audio: AudioData};
   Verification: {
     userInfo: {
       email: string;

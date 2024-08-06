@@ -74,7 +74,7 @@ export const updateAudio: RequestHandler = async (
     const poster = req.files?.poster;
     const ownerId = req.user.id;
     const { audioId } = req.params;
-
+    console.log(category);
     const audio = await Audio.findOneAndUpdate(
       { owner: ownerId, _id: audioId },
       { title: title[0], about: about[0], category: category[0] },
