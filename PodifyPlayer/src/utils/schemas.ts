@@ -44,20 +44,29 @@ export const forgetPasswordSchema = yup.object({
     .required('Password is required'),
 });
 
-export const audioInfoSchema = yup.object().shape({
+export const commonSchema = yup.object().shape({
   title: yup.string().trim().required('Title is missing'),
   category: yup.string().oneOf(categories).required('Category is missing'),
   about: yup.string().trim().required('About is missing'),
-  file: yup.object().shape({
-    uri: yup.string().required('Audio file is missing!'),
-    name: yup.string().required('Audio file is missing!'),
-    type: yup.string().required('Audio file is missing!'),
-    size: yup.number().required('Audio file is missing!'),
-  }),
+
   poster: yup.object().shape({
     uri: yup.string(),
     name: yup.string(),
     type: yup.string(),
     size: yup.number(),
   }),
+});
+
+export const newAudioSchema = yup.object().shape({
+  ...commonSchema.fields,
+  file: yup.object().shape({
+    uri: yup.string().required('Audio file is missing!'),
+    name: yup.string().required('Audio file is missing!'),
+    type: yup.string().required('Audio file is missing!'),
+    size: yup.number().required('Audio file is missing!'),
+  }),
+});
+
+export const oldAudioSchema = yup.object().shape({
+  ...commonSchema.fields,
 });
