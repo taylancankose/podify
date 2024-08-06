@@ -37,9 +37,11 @@ const SignIn: FC<Props> = props => {
   const handleSubmit = async (values: newUser, actions) => {
     actions.setSubmitting(true);
     try {
+      console.log('first');
       const client = await getClient();
-
+      console.log(client);
       const {data} = await client.post('/auth/login', values);
+      console.log(data);
       await saveToAsyncStorage(Keys.AUTH_TOKEN, data.token);
 
       dispatch(updateProfile(data.profile));
